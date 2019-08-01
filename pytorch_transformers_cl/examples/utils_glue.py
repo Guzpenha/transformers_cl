@@ -28,6 +28,7 @@ from sklearn.metrics import matthews_corrcoef, f1_score
 from IPython import embed
 import random
 import math
+import numpy as np
 
 logger = logging.getLogger(__name__)
 
