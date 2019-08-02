@@ -635,22 +635,26 @@ def pearson_and_spearman(preds, labels):
         "corr": (pearson_corr + spearman_corr) / 2,
     }
 
+def cycle(iterable):
+    while True:
+        for x in iterable:
+            yield x
+
 def _to_list(x):
     if isinstance(x, list):
         return x
     return [x]
 
 def read_curriculum_file(path):
-    idx_easy = []
-    idx_hard = []
+    idxs = {}
     with open(path,'r') as f:
         lines = f.readlines()
         for (i, l) in enumerate(lines):
-            if l == "1\n":
-                idx_easy.append(i)
-            elif l == "0\n":
-                idx_hard.append(i)
-    return idx_easy, idx_hard
+            label = int(l.split("\n")[0])
+            if label not in idxs:
+                idxs[label] = []
+            idxs[label].append(i)
+    return idxs
 
 def ap(y_true, y_pred, rel_threshold=0):
     s = 0.
