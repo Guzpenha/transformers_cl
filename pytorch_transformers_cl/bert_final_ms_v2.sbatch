@@ -1,8 +1,8 @@
 #!/bin/sh
 
 #SBATCH --partition=general
-#SBATCH --qos=short
-#SBATCH --time=2:00:00
+#SBATCH --qos=long
+#SBATCH --time=48:00:00
 #SBATCH --ntasks=1
 #SBATCH --cpus-per-task=1
 #SBATCH --gres=gpu:4
@@ -19,11 +19,14 @@ DATA_DIR=/tudelft.net/staff-umbrella/domaincss/wsdm19/bert_ranker/data
 
 source /home/nfs/gustavopenha/env_transformers/bin/activate
 
+for iter in 1 2 3 4 5
+do
 srun python ./examples/run_glue.py \
     --model_type bert \
     --model_name_or_path bert-base-uncased \
     --task_name $TASK_NAME \
     --do_train \
+    --do_eval \
     --do_lower_case \
     --data_dir $DATA_DIR/$TASK_NAME \
     --max_seq_length 128 \
@@ -32,15 +35,17 @@ srun python ./examples/run_glue.py \
     --learning_rate 2e-5 \
     --num_train_epochs $NUM_EPOCHS \
     --output_dir /tmp/$TASK_NAME/ \
-    --evaluate_during_training \
-    --overwrite_output_dir \
-    --logging_steps 10
+    --overwrite_output_dir 
+done
 
+for iter in 1 2 3 4 5
+do
 srun python ./examples/run_glue.py \
     --model_type bert \
     --model_name_or_path bert-base-uncased \
     --task_name $TASK_NAME \
     --do_train \
+    --do_eval \
     --do_lower_case \
     --data_dir $DATA_DIR/$TASK_NAME \
     --max_seq_length 128 \
@@ -49,16 +54,18 @@ srun python ./examples/run_glue.py \
     --learning_rate 2e-5 \
     --num_train_epochs $NUM_EPOCHS \
     --output_dir /tmp/$TASK_NAME/ \
-    --evaluate_during_training \
     --overwrite_output_dir \
-    --logging_steps 10 \
     --curriculum_file $DATA_DIR/$TASK_NAME/${TASK_NAME}_turns_c_3
+done
 
+for iter in 1 2 3 4 5
+do
 srun python ./examples/run_glue.py \
     --model_type bert \
     --model_name_or_path bert-base-uncased \
     --task_name $TASK_NAME \
     --do_train \
+    --do_eval \
     --do_lower_case \
     --data_dir $DATA_DIR/$TASK_NAME \
     --max_seq_length 128 \
@@ -67,16 +74,18 @@ srun python ./examples/run_glue.py \
     --learning_rate 2e-5 \
     --num_train_epochs $NUM_EPOCHS \
     --output_dir /tmp/$TASK_NAME/ \
-    --evaluate_during_training \
     --overwrite_output_dir \
-    --logging_steps 10 \
     --curriculum_file $DATA_DIR/$TASK_NAME/${TASK_NAME}_utt_avg_words_c_3
+done
 
+for iter in 1 2 3 4 5
+do
 srun python ./examples/run_glue.py \
     --model_type bert \
     --model_name_or_path bert-base-uncased \
     --task_name $TASK_NAME \
     --do_train \
+    --do_eval \
     --do_lower_case \
     --data_dir $DATA_DIR/$TASK_NAME \
     --max_seq_length 128 \
@@ -85,16 +94,18 @@ srun python ./examples/run_glue.py \
     --learning_rate 2e-5 \
     --num_train_epochs $NUM_EPOCHS \
     --output_dir /tmp/$TASK_NAME/ \
-    --evaluate_during_training \
     --overwrite_output_dir \
-    --logging_steps 10 \
     --curriculum_file $DATA_DIR/$TASK_NAME/${TASK_NAME}_cand_docs_avg_words_c_3
+done
 
+for iter in 1 2 3 4 5
+do
 srun python ./examples/run_glue.py \
     --model_type bert \
     --model_name_or_path bert-base-uncased \
     --task_name $TASK_NAME \
     --do_train \
+    --do_eval \
     --do_lower_case \
     --data_dir $DATA_DIR/$TASK_NAME \
     --max_seq_length 128 \
@@ -103,16 +114,18 @@ srun python ./examples/run_glue.py \
     --learning_rate 2e-5 \
     --num_train_epochs $NUM_EPOCHS \
     --output_dir /tmp/$TASK_NAME/ \
-    --evaluate_during_training \
     --overwrite_output_dir \
-    --logging_steps 10 \
     --curriculum_file $DATA_DIR/$TASK_NAME/${TASK_NAME}max_dif_exact_match_q_d_c_3
+done
 
+for iter in 1 2 3 4 5
+do
 srun python ./examples/run_glue.py \
     --model_type bert \
     --model_name_or_path bert-base-uncased \
     --task_name $TASK_NAME \
     --do_train \
+    --do_eval \
     --do_lower_case \
     --data_dir $DATA_DIR/$TASK_NAME \
     --max_seq_length 128 \
@@ -121,16 +134,18 @@ srun python ./examples/run_glue.py \
     --learning_rate 2e-5 \
     --num_train_epochs $NUM_EPOCHS \
     --output_dir /tmp/$TASK_NAME/ \
-    --evaluate_during_training \
     --overwrite_output_dir \
-    --logging_steps 10 \
     --curriculum_file $DATA_DIR/$TASK_NAME/${TASK_NAME}max_dif_semantic_match_q_d_c_3
+done
 
+for iter in 1 2 3 4 5
+do
 srun python ./examples/run_glue.py \
     --model_type bert \
     --model_name_or_path bert-base-uncased \
     --task_name $TASK_NAME \
     --do_train \
+    --do_eval \
     --do_lower_case \
     --data_dir $DATA_DIR/$TASK_NAME \
     --max_seq_length 128 \
@@ -139,16 +154,18 @@ srun python ./examples/run_glue.py \
     --learning_rate 2e-5 \
     --num_train_epochs $NUM_EPOCHS \
     --output_dir /tmp/$TASK_NAME/ \
-    --evaluate_during_training \
     --overwrite_output_dir \
-    --logging_steps 10 \
     --curriculum_file $DATA_DIR/$TASK_NAME/${TASK_NAME}_map_exact_match_q_d_rel_c_3
+done
 
+for iter in 1 2 3 4 5
+do
 srun python ./examples/run_glue.py \
     --model_type bert \
     --model_name_or_path bert-base-uncased \
     --task_name $TASK_NAME \
     --do_train \
+    --do_eval \
     --do_lower_case \
     --data_dir $DATA_DIR/$TASK_NAME \
     --max_seq_length 128 \
@@ -157,7 +174,6 @@ srun python ./examples/run_glue.py \
     --learning_rate 2e-5 \
     --num_train_epochs $NUM_EPOCHS \
     --output_dir /tmp/$TASK_NAME/ \
-    --evaluate_during_training \
     --overwrite_output_dir \
-    --logging_steps 10 \
     --curriculum_file $DATA_DIR/$TASK_NAME/${TASK_NAME}_map_semantic_match_q_d_rel_c_3
+done
