@@ -89,7 +89,7 @@ def train(args, train_dataset, model, tokenizer):
     else:
         train_sampler = RandomSampler(train_dataset) if args.local_rank == -1 else DistributedSampler(train_dataset)
         train_dataloader = DataLoader(train_dataset, sampler=train_sampler, batch_size=args.train_batch_size)
-        data_loaders.append(train_dataloader)
+        data_loaders.append(('all_random_batches', train_dataloader))
 
         if args.max_steps > 0:
             t_total = args.max_steps
