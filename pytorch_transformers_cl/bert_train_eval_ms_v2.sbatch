@@ -15,6 +15,7 @@ module load cuda/10.0 cudnn/10.0-7.4.2.24
 TASK_NAME=ms_v2
 NUM_EPOCHS=3.0
 BATCH_SIZE=32
+LOGGING_STEPS=10
 DATA_DIR=/tudelft.net/staff-umbrella/domaincss/wsdm19/bert_ranker/data
 
 source /home/nfs/gustavopenha/env_transformers/bin/activate
@@ -24,6 +25,7 @@ srun python ./examples/run_glue.py \
     --model_name_or_path bert-base-uncased \
     --task_name $TASK_NAME \
     --do_train \
+    --do_eval \
     --do_lower_case \
     --data_dir $DATA_DIR/$TASK_NAME \
     --max_seq_length 128 \
@@ -34,13 +36,15 @@ srun python ./examples/run_glue.py \
     --output_dir /tmp/$TASK_NAME/ \
     --evaluate_during_training \
     --overwrite_output_dir \
-    --logging_steps 10
+    --logging_steps $LOGGING_STEPS \
+    --eval_all_checkpoints
 
 srun python ./examples/run_glue.py \
     --model_type bert \
     --model_name_or_path bert-base-uncased \
     --task_name $TASK_NAME \
     --do_train \
+    --do_eval \
     --do_lower_case \
     --data_dir $DATA_DIR/$TASK_NAME \
     --max_seq_length 128 \
@@ -51,14 +55,16 @@ srun python ./examples/run_glue.py \
     --output_dir /tmp/$TASK_NAME/ \
     --evaluate_during_training \
     --overwrite_output_dir \
-    --logging_steps 10 \
-    --curriculum_file $DATA_DIR/$TASK_NAME/${TASK_NAME}_turns_c_3
+    --logging_steps $LOGGING_STEPS \
+    --curriculum_file $DATA_DIR/$TASK_NAME/${TASK_NAME}_turns_c_3 \
+    --eval_all_checkpoints
 
 srun python ./examples/run_glue.py \
     --model_type bert \
     --model_name_or_path bert-base-uncased \
     --task_name $TASK_NAME \
     --do_train \
+    --do_eval \
     --do_lower_case \
     --data_dir $DATA_DIR/$TASK_NAME \
     --max_seq_length 128 \
@@ -69,14 +75,16 @@ srun python ./examples/run_glue.py \
     --output_dir /tmp/$TASK_NAME/ \
     --evaluate_during_training \
     --overwrite_output_dir \
-    --logging_steps 10 \
-    --curriculum_file $DATA_DIR/$TASK_NAME/${TASK_NAME}_utt_avg_words_c_3
+    --logging_steps $LOGGING_STEPS \
+    --curriculum_file $DATA_DIR/$TASK_NAME/${TASK_NAME}_utt_avg_words_c_3 \
+    --eval_all_checkpoints
 
 srun python ./examples/run_glue.py \
     --model_type bert \
     --model_name_or_path bert-base-uncased \
     --task_name $TASK_NAME \
     --do_train \
+    --do_eval \
     --do_lower_case \
     --data_dir $DATA_DIR/$TASK_NAME \
     --max_seq_length 128 \
@@ -87,14 +95,16 @@ srun python ./examples/run_glue.py \
     --output_dir /tmp/$TASK_NAME/ \
     --evaluate_during_training \
     --overwrite_output_dir \
-    --logging_steps 10 \
-    --curriculum_file $DATA_DIR/$TASK_NAME/${TASK_NAME}_cand_docs_avg_words_c_3
+    --logging_steps $LOGGING_STEPS \
+    --curriculum_file $DATA_DIR/$TASK_NAME/${TASK_NAME}_cand_docs_avg_words_c_3 \
+    --eval_all_checkpoints
 
 srun python ./examples/run_glue.py \
     --model_type bert \
     --model_name_or_path bert-base-uncased \
     --task_name $TASK_NAME \
     --do_train \
+    --do_eval \
     --do_lower_case \
     --data_dir $DATA_DIR/$TASK_NAME \
     --max_seq_length 128 \
@@ -105,14 +115,16 @@ srun python ./examples/run_glue.py \
     --output_dir /tmp/$TASK_NAME/ \
     --evaluate_during_training \
     --overwrite_output_dir \
-    --logging_steps 10 \
-    --curriculum_file $DATA_DIR/$TASK_NAME/${TASK_NAME}max_dif_exact_match_q_d_c_3
+    --logging_steps $LOGGING_STEPS \
+    --curriculum_file $DATA_DIR/$TASK_NAME/${TASK_NAME}max_dif_exact_match_q_d_c_3 \
+    --eval_all_checkpoints
 
 srun python ./examples/run_glue.py \
     --model_type bert \
     --model_name_or_path bert-base-uncased \
     --task_name $TASK_NAME \
     --do_train \
+    --do_eval \
     --do_lower_case \
     --data_dir $DATA_DIR/$TASK_NAME \
     --max_seq_length 128 \
@@ -123,14 +135,16 @@ srun python ./examples/run_glue.py \
     --output_dir /tmp/$TASK_NAME/ \
     --evaluate_during_training \
     --overwrite_output_dir \
-    --logging_steps 10 \
-    --curriculum_file $DATA_DIR/$TASK_NAME/${TASK_NAME}max_dif_semantic_match_q_d_c_3
+    --logging_steps $LOGGING_STEPS \
+    --curriculum_file $DATA_DIR/$TASK_NAME/${TASK_NAME}max_dif_semantic_match_q_d_c_3 \
+    --eval_all_checkpoints
 
 srun python ./examples/run_glue.py \
     --model_type bert \
     --model_name_or_path bert-base-uncased \
     --task_name $TASK_NAME \
     --do_train \
+    --do_eval \
     --do_lower_case \
     --data_dir $DATA_DIR/$TASK_NAME \
     --max_seq_length 128 \
@@ -141,14 +155,16 @@ srun python ./examples/run_glue.py \
     --output_dir /tmp/$TASK_NAME/ \
     --evaluate_during_training \
     --overwrite_output_dir \
-    --logging_steps 10 \
-    --curriculum_file $DATA_DIR/$TASK_NAME/${TASK_NAME}_map_exact_match_q_d_rel_c_3
+    --logging_steps $LOGGING_STEPS \
+    --curriculum_file $DATA_DIR/$TASK_NAME/${TASK_NAME}_map_exact_match_q_d_rel_c_3 \
+    --eval_all_checkpoints
 
 srun python ./examples/run_glue.py \
     --model_type bert \
     --model_name_or_path bert-base-uncased \
     --task_name $TASK_NAME \
     --do_train \
+    --do_eval \
     --do_lower_case \
     --data_dir $DATA_DIR/$TASK_NAME \
     --max_seq_length 128 \
@@ -159,5 +175,6 @@ srun python ./examples/run_glue.py \
     --output_dir /tmp/$TASK_NAME/ \
     --evaluate_during_training \
     --overwrite_output_dir \
-    --logging_steps 10 \
-    --curriculum_file $DATA_DIR/$TASK_NAME/${TASK_NAME}_map_semantic_match_q_d_rel_c_3
+    --logging_steps $LOGGING_STEPS \
+    --curriculum_file $DATA_DIR/$TASK_NAME/${TASK_NAME}_map_semantic_match_q_d_rel_c_3 \
+    --eval_all_checkpoints

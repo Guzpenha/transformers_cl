@@ -134,6 +134,8 @@ def train(args, train_dataset, model, tokenizer):
     logger.info("  data_loaders = %s", data_loaders)
     global_step = 0
     tr_loss, logging_loss = 0.0, 0.0
+    best_model = None
+    best_map = 0.0
     model.zero_grad()
     epochs = args.num_train_epochs
     if len(data_loaders) > 1:
@@ -181,9 +183,18 @@ def train(args, train_dataset, model, tokenizer):
                             results = evaluate(args, model, tokenizer)
                             for key, value in results.items():
                                 tb_writer.add_scalar('eval_{}'.format(key), value, global_step)
-                        tb_writer.add_scalar('lr', scheduler.get_lr()[0], global_step)
-                        tb_writer.add_scalar('loss', (tr_loss - logging_loss)/args.logging_steps, global_step)
-                        logging_loss = tr_loss
+                            if results['map'] > best_map:
+                                best_map = results['map']
+                                output_dir = os.path.join(args.output_dir, 'checkpoint-best')
+                                if not os.path.exists(output_dir):
+                                    os.makedirs(output_dir)
+                                model_to_save = model.module if hasattr(model, 'module') else model  # Take care of distributed/parallel training
+                                model_to_save.save_pretrained(output_dir)
+                                torch.save(args, os.path.join(output_dir, 'training_args.bin'))
+                                logger.info("Saving best model so far to %s", output_dir)
+                            tb_writer.add_scalar('lr', scheduler.get_lr()[0], global_step)
+                            tb_writer.add_scalar('loss', (tr_loss - logging_loss)/args.logging_steps, global_step)
+                            logging_loss = tr_loss
 
                     if args.local_rank in [-1, 0] and args.save_steps > 0 and global_step % args.save_steps == 0:
                         # Save model checkpoint
@@ -212,14 +223,14 @@ def train(args, train_dataset, model, tokenizer):
     return global_step, tr_loss / global_step
 
 
-def evaluate(args, model, tokenizer, prefix=""):
+def evaluate(args, model, tokenizer, prefix="", eval_set = 'dev'):
     # Loop to handle MNLI double evaluation (matched, mis-matched)
     eval_task_names = ("mnli", "mnli-mm") if args.task_name == "mnli" else (args.task_name,)
     eval_outputs_dirs = (args.output_dir, args.output_dir + '-MM') if args.task_name == "mnli" else (args.output_dir,)
 
     results = {}
     for eval_task, eval_output_dir in zip(eval_task_names, eval_outputs_dirs):
-        eval_dataset = load_and_cache_examples(args, eval_task, tokenizer, evaluate=True)
+        eval_dataset = load_and_cache_examples(args, eval_task, tokenizer, eval_set)
 
         if not os.path.exists(eval_output_dir) and args.local_rank in [-1, 0]:
             os.makedirs(eval_output_dir)
@@ -278,12 +289,12 @@ def evaluate(args, model, tokenizer, prefix=""):
     return results
 
 
-def load_and_cache_examples(args, task, tokenizer, evaluate=False):
+def load_and_cache_examples(args, task, tokenizer, instances_set='train'):
     processor = processors[task]()
     output_mode = output_modes[task]
     # Load data features from cache or dataset file
     cached_features_file = os.path.join(args.data_dir, 'cached_{}_{}_{}_{}'.format(
-        'dev' if evaluate else 'train',
+        instances_set,
         list(filter(None, args.model_name_or_path.split('/'))).pop(),
         str(args.max_seq_length),
         str(task)))
@@ -293,7 +304,13 @@ def load_and_cache_examples(args, task, tokenizer, evaluate=False):
     else:
         logger.info("Creating features from dataset file at %s", args.data_dir)
         label_list = processor.get_labels()
-        examples = processor.get_dev_examples(args.data_dir) if evaluate else processor.get_train_examples(args.data_dir)
+        if instances_set == 'dev':
+            examples = processor.get_dev_examples(args.data_dir)
+        elif instances_set == 'train':
+            examples = processor.get_train_examples(args.data_dir)
+        elif instances_set == 'test':
+            examples = processor.get_test_examples(args.data_dir)
+
         features = convert_examples_to_features(examples, label_list, args.max_seq_length, tokenizer, output_mode,
             cls_token_at_end=bool(args.model_type in ['xlnet']),            # xlnet has a cls token at the end
             cls_token=tokenizer.cls_token,
@@ -375,7 +392,7 @@ def main():
 
     parser.add_argument('--logging_steps', type=int, default=50,
                         help="Log every X updates steps.")
-    parser.add_argument('--save_steps', type=int, default=50,
+    parser.add_argument('--save_steps', type=int, default=5000,
                         help="Save checkpoint every X updates steps.")
     parser.add_argument("--eval_all_checkpoints", action='store_true',
                         help="Evaluate all checkpoints starting with the same prefix as model_name ending and ending with step number")
@@ -465,7 +482,7 @@ def main():
 
     # Training
     if args.do_train:
-        train_dataset = load_and_cache_examples(args, args.task_name, tokenizer, evaluate=False)
+        train_dataset = load_and_cache_examples(args, args.task_name, tokenizer, 'train')
         global_step, tr_loss = train(args, train_dataset, model, tokenizer)
         logger.info(" global_step = %s, average loss = %s", global_step, tr_loss)
 
@@ -504,7 +521,7 @@ def main():
             global_step = checkpoint.split('-')[-1] if len(checkpoints) > 1 else ""
             model = model_class.from_pretrained(checkpoint)
             model.to(args.device)
-            result = evaluate(args, model, tokenizer, prefix=global_step)
+            result = evaluate(args, model, tokenizer, prefix=global_step, eval_set='test')
             result = dict((k + '_{}'.format(global_step), v) for k, v in result.items())
             results.update(result)
 

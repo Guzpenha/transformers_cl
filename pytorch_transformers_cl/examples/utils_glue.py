@@ -105,6 +105,11 @@ class UDCProcessor(DataProcessor):
         return self._create_examples(
             self._read_tsv(os.path.join(data_dir, "valid.txt")), "dev")
 
+    def get_test_examples(self, data_dir):
+        """See base class."""
+        return self._create_examples(
+            self._read_tsv(os.path.join(data_dir, "test.txt")), "test")
+
     def get_labels(self):
         """See base class."""
         return ["0", "1"]
@@ -136,6 +141,11 @@ class MSDialogProcessor(DataProcessor):
         return self._create_examples(
             self._read_tsv(os.path.join(data_dir, "valid.txt")), "dev")
 
+    def get_test_examples(self, data_dir):
+        """See base class."""
+        return self._create_examples(
+            self._read_tsv(os.path.join(data_dir, "test.txt")), "test")
+
     def get_labels(self):
         """See base class."""
         return ["0", "1"]
@@ -165,6 +175,11 @@ class MantisProcessor(DataProcessor):
         """See base class."""
         return self._create_examples(
             self._read_tsv(os.path.join(data_dir, "valid.txt")), "dev")
+
+    def get_test_examples(self, data_dir):
+        """See base class."""
+        return self._create_examples(
+            self._read_tsv(os.path.join(data_dir, "test.txt")), "test")
 
     def get_labels(self):
         """See base class."""
