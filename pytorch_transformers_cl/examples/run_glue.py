@@ -192,6 +192,7 @@ def train(args, train_dataset, model, tokenizer):
                                 model_to_save.save_pretrained(output_dir)
                                 torch.save(args, os.path.join(output_dir, 'training_args.bin'))
                                 logger.info("Saving best model so far to %s", output_dir)
+                                logger.info("Iter = " + str(global_step))
                             tb_writer.add_scalar('lr', scheduler.get_lr()[0], global_step)
                             tb_writer.add_scalar('loss', (tr_loss - logging_loss)/args.logging_steps, global_step)
                             logging_loss = tr_loss
@@ -248,7 +249,7 @@ def evaluate(args, model, tokenizer, prefix="", eval_set = 'dev'):
         nb_eval_steps = 0
         preds = None
         out_label_ids = None
-        for batch in tqdm(eval_dataloader, desc="Evaluating"):
+        for batch in eval_dataloader:
             model.eval()
             batch = tuple(t.to(args.device) for t in batch)
 

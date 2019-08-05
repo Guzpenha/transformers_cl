@@ -15,7 +15,7 @@ module load cuda/10.0 cudnn/10.0-7.4.2.24
 TASK_NAME=ms_v2
 NUM_EPOCHS=3.0
 BATCH_SIZE=32
-LOGGING_STEPS=10
+LOGGING_STEPS=50
 DATA_DIR=/tudelft.net/staff-umbrella/domaincss/wsdm19/bert_ranker/data
 
 source /home/nfs/gustavopenha/env_transformers/bin/activate
@@ -33,7 +33,7 @@ srun python ./examples/run_glue.py \
     --per_gpu_train_batch_size=$BATCH_SIZE  \
     --learning_rate 2e-5 \
     --num_train_epochs $NUM_EPOCHS \
-    --output_dir /tmp/$TASK_NAME/ \
+    --output_dir $DATA_DIR/${TASK_NAME}_output \
     --evaluate_during_training \
     --overwrite_output_dir \
     --logging_steps $LOGGING_STEPS \
@@ -52,7 +52,7 @@ srun python ./examples/run_glue.py \
     --per_gpu_train_batch_size=$BATCH_SIZE  \
     --learning_rate 2e-5 \
     --num_train_epochs $NUM_EPOCHS \
-    --output_dir /tmp/$TASK_NAME/ \
+    --output_dir $DATA_DIR/${TASK_NAME}_output \
     --evaluate_during_training \
     --overwrite_output_dir \
     --logging_steps $LOGGING_STEPS \
@@ -72,7 +72,7 @@ srun python ./examples/run_glue.py \
     --per_gpu_train_batch_size=$BATCH_SIZE  \
     --learning_rate 2e-5 \
     --num_train_epochs $NUM_EPOCHS \
-    --output_dir /tmp/$TASK_NAME/ \
+    --output_dir $DATA_DIR/${TASK_NAME}_output \
     --evaluate_during_training \
     --overwrite_output_dir \
     --logging_steps $LOGGING_STEPS \
@@ -92,7 +92,7 @@ srun python ./examples/run_glue.py \
     --per_gpu_train_batch_size=$BATCH_SIZE  \
     --learning_rate 2e-5 \
     --num_train_epochs $NUM_EPOCHS \
-    --output_dir /tmp/$TASK_NAME/ \
+    --output_dir $DATA_DIR/${TASK_NAME}_output \
     --evaluate_during_training \
     --overwrite_output_dir \
     --logging_steps $LOGGING_STEPS \
@@ -112,7 +112,7 @@ srun python ./examples/run_glue.py \
     --per_gpu_train_batch_size=$BATCH_SIZE  \
     --learning_rate 2e-5 \
     --num_train_epochs $NUM_EPOCHS \
-    --output_dir /tmp/$TASK_NAME/ \
+    --output_dir $DATA_DIR/${TASK_NAME}_output \
     --evaluate_during_training \
     --overwrite_output_dir \
     --logging_steps $LOGGING_STEPS \
@@ -132,7 +132,7 @@ srun python ./examples/run_glue.py \
     --per_gpu_train_batch_size=$BATCH_SIZE  \
     --learning_rate 2e-5 \
     --num_train_epochs $NUM_EPOCHS \
-    --output_dir /tmp/$TASK_NAME/ \
+    --output_dir $DATA_DIR/${TASK_NAME}_output \
     --evaluate_during_training \
     --overwrite_output_dir \
     --logging_steps $LOGGING_STEPS \
@@ -152,7 +152,7 @@ srun python ./examples/run_glue.py \
     --per_gpu_train_batch_size=$BATCH_SIZE  \
     --learning_rate 2e-5 \
     --num_train_epochs $NUM_EPOCHS \
-    --output_dir /tmp/$TASK_NAME/ \
+    --output_dir $DATA_DIR/${TASK_NAME}_output \
     --evaluate_during_training \
     --overwrite_output_dir \
     --logging_steps $LOGGING_STEPS \
@@ -172,7 +172,7 @@ srun python ./examples/run_glue.py \
     --per_gpu_train_batch_size=$BATCH_SIZE  \
     --learning_rate 2e-5 \
     --num_train_epochs $NUM_EPOCHS \
-    --output_dir /tmp/$TASK_NAME/ \
+    --output_dir $DATA_DIR/${TASK_NAME}_output \
     --evaluate_during_training \
     --overwrite_output_dir \
     --logging_steps $LOGGING_STEPS \
