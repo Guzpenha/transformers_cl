@@ -74,18 +74,26 @@ def train(args, train_dataset, model, tokenizer):
 
     data_loaders = []
     if args.curriculum_file != "":
-        logger.info("  Using curriculum from file " + args.curriculum_file)
-
+        logger.info("Using curriculum from file " + args.curriculum_file)
+        logger.info("Additive sets : " + str(args.use_additive_cl))
         cl_m = read_curriculum_file(args.curriculum_file)
+        all_idxs = []
         for phase in range(len(cl_m.keys())):
             idx = cl_m[phase]
+            all_idxs = all_idxs + idx
+
+            if args.use_additive_cl:
+                idx = all_idxs
             logger.info("Phase " + str(phase) + " has "+str(len(idx)) + " instances.")
 
             train_data = [train_dataset[i] for i in idx]
             train_sampler = RandomSampler(train_data) if args.local_rank == -1 else DistributedSampler(train_data)
             train_dataloader = DataLoader(train_data, sampler=train_sampler, batch_size=args.train_batch_size)
             data_loaders.append(('phase_' + str(phase), train_dataloader))
-        t_total = sum([len(loader) for _, loader in data_loaders]) // args.gradient_accumulation_steps * args.num_train_epochs
+        if args.use_additive_cl:
+            t_total = len(data_loaders[-1][1]) // args.gradient_accumulation_steps * args.num_train_epochs
+        else:
+            t_total = sum([len(loader) for _, loader in data_loaders]) // args.gradient_accumulation_steps * args.num_train_epochs
     else:
         train_sampler = RandomSampler(train_dataset) if args.local_rank == -1 else DistributedSampler(train_dataset)
         train_dataloader = DataLoader(train_dataset, sampler=train_sampler, batch_size=args.train_batch_size)
@@ -420,6 +428,8 @@ def main():
                         type=str,
                         help="File containing a curriculum to follow during training,\n"
                              "containing label for each training instance")
+    parser.add_argument("--use_additive_cl", action='store_true',
+                        help="Whether to add new sets or not (easy->easy+hard vs easy->hard).")
     args = parser.parse_args()
 
     if os.path.exists(args.output_dir) and os.listdir(args.output_dir) and args.do_train and not args.overwrite_output_dir:
