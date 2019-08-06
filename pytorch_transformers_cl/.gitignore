@@ -1,3 +1,4 @@
 runs/
 env/
-examples/__pycache__/
+examples/__pycache__/*
+examples/__pycache__/utils_glue.cpython-37.pyc
