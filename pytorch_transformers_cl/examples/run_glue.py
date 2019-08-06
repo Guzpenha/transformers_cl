@@ -41,7 +41,8 @@ from pytorch_transformers import (WEIGHTS_NAME, BertConfig,
 from pytorch_transformers import AdamW, WarmupLinearSchedule
 
 from utils_glue import (compute_metrics, convert_examples_to_features,
-                        output_modes, processors, read_curriculum_file, cycle)
+                        output_modes, processors, read_curriculum_file, cycle,
+                        compute_aps)
 
 from IPython import embed
 
@@ -232,7 +233,7 @@ def train(args, train_dataset, model, tokenizer):
     return global_step, tr_loss / global_step
 
 
-def evaluate(args, model, tokenizer, prefix="", eval_set = 'dev'):
+def evaluate(args, model, tokenizer, prefix="", eval_set='dev', save_aps=False):
     # Loop to handle MNLI double evaluation (matched, mis-matched)
     eval_task_names = ("mnli", "mnli-mm") if args.task_name == "mnli" else (args.task_name,)
     eval_outputs_dirs = (args.output_dir, args.output_dir + '-MM') if args.task_name == "mnli" else (args.output_dir,)
@@ -285,15 +286,23 @@ def evaluate(args, model, tokenizer, prefix="", eval_set = 'dev'):
             preds = np.argmax(preds, axis=1)
         elif args.output_mode == "regression":
             preds = np.squeeze(preds)
-        result = compute_metrics(eval_task, preds, out_label_ids)
-        results.update(result)
+        if save_aps:
+            assert args.local_rank == -1
+            aps = compute_aps(preds, out_label_ids)
+            output_eval_file = os.path.join(eval_output_dir, "aps")
+            with open(output_eval_file, "w") as f:
+                for ap in aps:
+                    f.write(str(ap)+"\n")
+        else:
+            result = compute_metrics(eval_task, preds, out_label_ids)
+            results.update(result)
 
-        output_eval_file = os.path.join(eval_output_dir, "eval_results.txt")
-        with open(output_eval_file, "w") as writer:
-            logger.info("***** Eval results {} *****".format(prefix))
-            for key in sorted(result.keys()):
-                logger.info("  %s = %s", key, str(result[key]))
-                writer.write("%s = %s\n" % (key, str(result[key])))
+            output_eval_file = os.path.join(eval_output_dir, "eval_results.txt")
+            with open(output_eval_file, "w") as writer:
+                logger.info("***** Eval results {} *****".format(prefix))
+                for key in sorted(result.keys()):
+                    logger.info("  %s = %s", key, str(result[key]))
+                    writer.write("%s = %s\n" % (key, str(result[key])))
 
     return results
 
@@ -430,6 +439,8 @@ def main():
                              "containing label for each training instance")
     parser.add_argument("--use_additive_cl", action='store_true',
                         help="Whether to add new sets or not (easy->easy+hard vs easy->hard).")
+    parser.add_argument("--save_aps", action='store_true',
+                        help="Whether to save ap of each query.")
     args = parser.parse_args()
 
     if os.path.exists(args.output_dir) and os.listdir(args.output_dir) and args.do_train and not args.overwrite_output_dir:
@@ -529,12 +540,20 @@ def main():
             logging.getLogger("pytorch_transformers.modeling_utils").setLevel(logging.WARN)  # Reduce logging
         logger.info("Evaluate the following checkpoints: %s", checkpoints)
         for checkpoint in checkpoints:
-            global_step = checkpoint.split('-')[-1] if len(checkpoints) > 1 else ""
-            model = model_class.from_pretrained(checkpoint)
-            model.to(args.device)
-            result = evaluate(args, model, tokenizer, prefix=global_step, eval_set='test')
-            result = dict((k + '_{}'.format(global_step), v) for k, v in result.items())
-            results.update(result)
+            if args.save_aps:
+                global_step = checkpoint.split('-')[-1] if len(checkpoints) > 1 else ""
+                if global_step == "best":
+                    model = model_class.from_pretrained(checkpoint)
+                    model.to(args.device)
+                    evaluate(args, model, tokenizer, prefix=global_step, eval_set='train', save_aps=True)
+            else:
+                global_step = checkpoint.split('-')[-1] if len(checkpoints) > 1 else ""
+                if global_step == "best":
+                    model = model_class.from_pretrained(checkpoint)
+                    model.to(args.device)
+                    result = evaluate(args, model, tokenizer, prefix=global_step, eval_set='test')
+                    result = dict((k + '_{}'.format(global_step), v) for k, v in result.items())
+                    results.update(result)
 
     return results
 

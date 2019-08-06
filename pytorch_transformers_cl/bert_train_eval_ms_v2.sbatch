@@ -17,6 +17,7 @@ NUM_EPOCHS=3.0
 BATCH_SIZE=32
 LOGGING_STEPS=50
 DATA_DIR=/tudelft.net/staff-umbrella/domaincss/wsdm19/bert_ranker/data
+RANDOM_SEED=1
 
 source /home/nfs/gustavopenha/env_transformers/bin/activate
 
@@ -37,7 +38,8 @@ srun python ./examples/run_glue.py \
     --evaluate_during_training \
     --overwrite_output_dir \
     --logging_steps $LOGGING_STEPS \
-    --eval_all_checkpoints
+    --eval_all_checkpoints \
+    --RANDOM_SEED $RANDOM_SEED
 
 srun python ./examples/run_glue.py \
     --model_type bert \
@@ -57,7 +59,9 @@ srun python ./examples/run_glue.py \
     --overwrite_output_dir \
     --logging_steps $LOGGING_STEPS \
     --curriculum_file $DATA_DIR/$TASK_NAME/${TASK_NAME}_turns_c_3 \
-    --eval_all_checkpoints
+    --eval_all_checkpoints \
+    --RANDOM_SEED $RANDOM_SEED \
+    --use_additive_cl
 
 srun python ./examples/run_glue.py \
     --model_type bert \
@@ -77,7 +81,9 @@ srun python ./examples/run_glue.py \
     --overwrite_output_dir \
     --logging_steps $LOGGING_STEPS \
     --curriculum_file $DATA_DIR/$TASK_NAME/${TASK_NAME}_utt_avg_words_c_3 \
-    --eval_all_checkpoints
+    --eval_all_checkpoints \
+    --RANDOM_SEED $RANDOM_SEED \
+    --use_additive_cl
 
 srun python ./examples/run_glue.py \
     --model_type bert \
@@ -97,7 +103,9 @@ srun python ./examples/run_glue.py \
     --overwrite_output_dir \
     --logging_steps $LOGGING_STEPS \
     --curriculum_file $DATA_DIR/$TASK_NAME/${TASK_NAME}_cand_docs_avg_words_c_3 \
-    --eval_all_checkpoints
+    --eval_all_checkpoints \
+    --RANDOM_SEED $RANDOM_SEED \
+    --use_additive_cl
 
 srun python ./examples/run_glue.py \
     --model_type bert \
@@ -117,7 +125,9 @@ srun python ./examples/run_glue.py \
     --overwrite_output_dir \
     --logging_steps $LOGGING_STEPS \
     --curriculum_file $DATA_DIR/$TASK_NAME/${TASK_NAME}max_dif_exact_match_q_d_c_3 \
-    --eval_all_checkpoints
+    --eval_all_checkpoints \
+    --RANDOM_SEED $RANDOM_SEED \
+    --use_additive_cl
 
 srun python ./examples/run_glue.py \
     --model_type bert \
@@ -137,7 +147,9 @@ srun python ./examples/run_glue.py \
     --overwrite_output_dir \
     --logging_steps $LOGGING_STEPS \
     --curriculum_file $DATA_DIR/$TASK_NAME/${TASK_NAME}max_dif_semantic_match_q_d_c_3 \
-    --eval_all_checkpoints
+    --eval_all_checkpoints \
+    --RANDOM_SEED $RANDOM_SEED \
+    --use_additive_cl
 
 srun python ./examples/run_glue.py \
     --model_type bert \
@@ -157,7 +169,9 @@ srun python ./examples/run_glue.py \
     --overwrite_output_dir \
     --logging_steps $LOGGING_STEPS \
     --curriculum_file $DATA_DIR/$TASK_NAME/${TASK_NAME}_map_exact_match_q_d_rel_c_3 \
-    --eval_all_checkpoints
+    --eval_all_checkpoints \
+    --RANDOM_SEED $RANDOM_SEED \
+    --use_additive_cl
 
 srun python ./examples/run_glue.py \
     --model_type bert \
@@ -177,4 +191,6 @@ srun python ./examples/run_glue.py \
     --overwrite_output_dir \
     --logging_steps $LOGGING_STEPS \
     --curriculum_file $DATA_DIR/$TASK_NAME/${TASK_NAME}_map_semantic_match_q_d_rel_c_3 \
-    --eval_all_checkpoints
+    --eval_all_checkpoints \
+    --RANDOM_SEED $RANDOM_SEED \
+    --use_additive_cl

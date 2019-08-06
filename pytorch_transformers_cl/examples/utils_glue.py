@@ -709,6 +709,27 @@ def mean_average_precision(preds, labels):
             aps.append(ap(query_labels, query_preds))
     return sum(aps)/float(len(aps))
 
+
+def compute_aps(preds, labels):
+    aps = []
+    query_preds = []
+    query_labels = []
+    i=0
+    for l,p in zip(labels, preds):
+        if (l == 1 and i !=0):
+            aps.append(ap(query_labels, query_preds))
+            query_preds=[]
+            query_labels=[]            
+
+        query_preds.append(p)
+        query_labels.append(l)
+
+        i+=1
+
+        if(i==len(preds)):
+            aps.append(ap(query_labels, query_preds))
+    return aps
+
 def compute_metrics(task_name, preds, labels):
     assert len(preds) == len(labels)
     if task_name == "cola":
