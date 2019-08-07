@@ -38,8 +38,9 @@ srun python ./examples/run_glue.py \
     --evaluate_during_training \
     --overwrite_output_dir \
     --logging_steps $LOGGING_STEPS \
+    --curriculum_file $DATA_DIR/$TASK_NAME/${TASK_NAME}_random_c_3 \
     --eval_all_checkpoints \
-    --RANDOM_SEED $RANDOM_SEED
+    --seed $RANDOM_SEED
 
 srun python ./examples/run_glue.py \
     --model_type bert \
@@ -60,7 +61,7 @@ srun python ./examples/run_glue.py \
     --logging_steps $LOGGING_STEPS \
     --curriculum_file $DATA_DIR/$TASK_NAME/${TASK_NAME}_turns_c_3 \
     --eval_all_checkpoints \
-    --RANDOM_SEED $RANDOM_SEED \
+    --seed $RANDOM_SEED \
     --use_additive_cl
 
 srun python ./examples/run_glue.py \
@@ -82,7 +83,7 @@ srun python ./examples/run_glue.py \
     --logging_steps $LOGGING_STEPS \
     --curriculum_file $DATA_DIR/$TASK_NAME/${TASK_NAME}_utt_avg_words_c_3 \
     --eval_all_checkpoints \
-    --RANDOM_SEED $RANDOM_SEED \
+    --seed $RANDOM_SEED \
     --use_additive_cl
 
 srun python ./examples/run_glue.py \
@@ -104,7 +105,7 @@ srun python ./examples/run_glue.py \
     --logging_steps $LOGGING_STEPS \
     --curriculum_file $DATA_DIR/$TASK_NAME/${TASK_NAME}_cand_docs_avg_words_c_3 \
     --eval_all_checkpoints \
-    --RANDOM_SEED $RANDOM_SEED \
+    --seed $RANDOM_SEED \
     --use_additive_cl
 
 srun python ./examples/run_glue.py \
@@ -126,7 +127,7 @@ srun python ./examples/run_glue.py \
     --logging_steps $LOGGING_STEPS \
     --curriculum_file $DATA_DIR/$TASK_NAME/${TASK_NAME}max_dif_exact_match_q_d_c_3 \
     --eval_all_checkpoints \
-    --RANDOM_SEED $RANDOM_SEED \
+    --seed $RANDOM_SEED \
     --use_additive_cl
 
 srun python ./examples/run_glue.py \
@@ -148,7 +149,7 @@ srun python ./examples/run_glue.py \
     --logging_steps $LOGGING_STEPS \
     --curriculum_file $DATA_DIR/$TASK_NAME/${TASK_NAME}max_dif_semantic_match_q_d_c_3 \
     --eval_all_checkpoints \
-    --RANDOM_SEED $RANDOM_SEED \
+    --seed $RANDOM_SEED \
     --use_additive_cl
 
 srun python ./examples/run_glue.py \
@@ -170,7 +171,7 @@ srun python ./examples/run_glue.py \
     --logging_steps $LOGGING_STEPS \
     --curriculum_file $DATA_DIR/$TASK_NAME/${TASK_NAME}_map_exact_match_q_d_rel_c_3 \
     --eval_all_checkpoints \
-    --RANDOM_SEED $RANDOM_SEED \
+    --seed $RANDOM_SEED \
     --use_additive_cl
 
 srun python ./examples/run_glue.py \
@@ -192,5 +193,5 @@ srun python ./examples/run_glue.py \
     --logging_steps $LOGGING_STEPS \
     --curriculum_file $DATA_DIR/$TASK_NAME/${TASK_NAME}_map_semantic_match_q_d_rel_c_3 \
     --eval_all_checkpoints \
-    --RANDOM_SEED $RANDOM_SEED \
+    --seed $RANDOM_SEED \
     --use_additive_cl
