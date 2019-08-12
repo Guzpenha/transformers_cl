@@ -14,7 +14,7 @@ module load cuda/10.0 cudnn/10.0-7.4.2.24
 
 TASK_NAME=ms_v2
 NUM_EPOCHS=3.0
-BATCH_SIZE=128
+BATCH_SIZE=32
 LOGGING_STEPS=50
 DATA_DIR=/tudelft.net/staff-umbrella/domaincss/wsdm19/bert_ranker/data
 RANDOM_SEED=1
@@ -39,5 +39,5 @@ srun python ./examples/run_glue.py \
     --overwrite_output_dir \
     --logging_steps $LOGGING_STEPS \
     --eval_all_checkpoints \
-    --RANDOM_SEED $RANDOM_SEED \
+    --seed $RANDOM_SEED \
     --save_aps
