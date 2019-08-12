@@ -155,7 +155,7 @@ def train(args, train_dataset, model, tokenizer):
     for loader_name, train_dataloader in data_loaders:
         for epoch_i in range(int(epochs)):
             logger.info("Starting epoch " + str(epoch_i+1))
-            logger.info("Training with " +loader_name)
+            logger.info("Training with " + loader_name)
             for step, batch in enumerate(cycle(train_dataloader)):
                 model.train()
                 batch = tuple(t.to(args.device) for t in batch)
@@ -293,6 +293,18 @@ def evaluate(args, model, tokenizer, prefix="", eval_set='dev', save_aps=False):
             with open(output_eval_file, "w") as f:
                 for ap in aps:
                     f.write(str(ap)+"\n")
+
+            # to check others neg_sampled size
+            negative_sampled_size = 10
+            assert args.task_name == "ms_v2"
+
+            preds_q_docs_avg = []
+            for i in range(0,len(preds), negative_sampled_size):
+                preds_q_docs_avg.append(sum(preds[i:i+10])/negative_sampled_size)
+            output_eval_file = os.path.join(eval_output_dir, "avg_confidence_scores")
+            with open(output_eval_file, "w") as f:
+                for avg in preds_q_docs_avg:
+                    f.write(str(avg)+"\n")
         else:
             result = compute_metrics(eval_task, preds, out_label_ids)
             results.update(result)

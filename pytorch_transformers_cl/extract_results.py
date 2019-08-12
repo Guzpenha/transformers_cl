@@ -14,6 +14,7 @@ parser.add_argument("--slurm_file",
 
 args = parser.parse_args()
 
+os.system("rm res")
 os.system("cat "+args.slurm_file+" | grep -Po 'map = \\K\\d+.\\d+' > res")
 print("cat "+args.slurm_file+" | grep -Po 'map = \\K\\d+.\\d+' > res")
 sets = ["random_batches", "turns", "query_length", "doc_length", "exact_match", "semantic_match", "map_exact_match", "map_semantic_match"]
