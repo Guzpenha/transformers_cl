@@ -40,7 +40,8 @@ srun python ./examples/run_glue.py \
     --logging_steps $LOGGING_STEPS \
     --curriculum_file $DATA_DIR/$TASK_NAME/${TASK_NAME}_random_c_3 \
     --eval_all_checkpoints \
-    --seed $RANDOM_SEED
+    --seed $RANDOM_SEED \
+    --use_additive_cl
 
 srun python ./examples/run_glue.py \
     --model_type bert \
