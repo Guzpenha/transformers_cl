@@ -194,7 +194,7 @@ def train(args, train_dataset, model, tokenizer):
                                 tb_writer.add_scalar('eval_{}'.format(key), value, global_step)
                             if results['map'] > best_map:
                                 best_map = results['map']
-                                output_dir = os.path.join(args.output_dir, 'checkpoint-best')
+                                output_dir = os.path.join(args.output_dir, 'checkpoint-best_'+args.run_name)
                                 if not os.path.exists(output_dir):
                                     os.makedirs(output_dir)
                                 model_to_save = model.module if hasattr(model, 'module') else model  # Take care of distributed/parallel training
@@ -223,9 +223,15 @@ def train(args, train_dataset, model, tokenizer):
                 if args.max_steps > 0 and global_step > args.max_steps:
                     epoch_iterator.close()
                     break
+                if args.debug_mode:
+                    break
             if args.max_steps > 0 and global_step > args.max_steps:
                 train_iterator.close()
                 break
+            if args.debug_mode:
+                break
+        if args.debug_mode:
+            break
 
     if args.local_rank in [-1, 0]:
         tb_writer.close()
@@ -278,6 +284,8 @@ def evaluate(args, model, tokenizer, prefix="", eval_set='dev', save_aps=False):
             else:
                 preds = np.append(preds, logits.detach().cpu().numpy(), axis=0)
                 out_label_ids = np.append(out_label_ids, inputs['labels'].detach().cpu().numpy(), axis=0)
+            if args.debug_mode:
+                break
 
         eval_loss = eval_loss / nb_eval_steps
         if args.task_name == "ms_v2" or args.task_name == "udc" or args.task_name == "mantis":
@@ -289,11 +297,15 @@ def evaluate(args, model, tokenizer, prefix="", eval_set='dev', save_aps=False):
         if save_aps:
             assert args.local_rank == -1
             aps = compute_aps(preds, out_label_ids)
-            output_eval_file = os.path.join(eval_output_dir, "aps")
+            output_eval_file = os.path.join(eval_output_dir, "aps_" + args.run_name)
             with open(output_eval_file, "w") as f:
                 for ap in aps:
                     f.write(str(ap)+"\n")
 
+            output_eval_file = os.path.join(eval_output_dir, "preds_" + args.run_name)
+            with open(output_eval_file, "w") as f:
+                for pred in preds:
+                    f.write(str(pred)+"\n")
             # to check others neg_sampled size
             negative_sampled_size = 10
             assert args.task_name == "ms_v2"
@@ -301,7 +313,7 @@ def evaluate(args, model, tokenizer, prefix="", eval_set='dev', save_aps=False):
             preds_q_docs_avg = []
             for i in range(0,len(preds), negative_sampled_size):
                 preds_q_docs_avg.append(sum(preds[i:i+10])/negative_sampled_size)
-            output_eval_file = os.path.join(eval_output_dir, "avg_confidence_scores")
+            output_eval_file = os.path.join(eval_output_dir, "avg_confidence_scores_"+args.run_name)
             with open(output_eval_file, "w") as f:
                 for avg in preds_q_docs_avg:
                     f.write(str(avg)+"\n")
@@ -453,7 +465,11 @@ def main():
                         help="Whether to add new sets or not (easy->easy+hard vs easy->hard).")
     parser.add_argument("--save_aps", action='store_true',
                         help="Whether to save ap of each query.")
+    parser.add_argument("--debug_mode", action='store_true')
+
     args = parser.parse_args()
+
+    args.run_name = "run_cl_"+args.curriculum_file.split(args.task_name)[-1]+"_seed_"+str(args.seed)
 
     if os.path.exists(args.output_dir) and os.listdir(args.output_dir) and args.do_train and not args.overwrite_output_dir:
         raise ValueError("Output directory ({}) already exists and is not empty. Use --overwrite_output_dir to overcome.".format(args.output_dir))
@@ -554,16 +570,16 @@ def main():
         for checkpoint in checkpoints:
             if args.save_aps:
                 global_step = checkpoint.split('-')[-1] if len(checkpoints) > 1 else ""
-                if global_step == "best":
+                if global_step == 'best_'+args.run_name:
                     model = model_class.from_pretrained(checkpoint)
                     model.to(args.device)
                     evaluate(args, model, tokenizer, prefix=global_step, eval_set='train', save_aps=True)
             else:
                 global_step = checkpoint.split('-')[-1] if len(checkpoints) > 1 else ""
-                if global_step == "best":
+                if global_step == 'best_'+args.run_name:
                     model = model_class.from_pretrained(checkpoint)
                     model.to(args.device)
-                    result = evaluate(args, model, tokenizer, prefix=global_step, eval_set='test')
+                    result = evaluate(args, model, tokenizer, prefix=global_step, eval_set='test', save_aps=True)
                     result = dict((k + '_{}'.format(global_step), v) for k, v in result.items())
                     results.update(result)
 
