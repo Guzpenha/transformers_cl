@@ -264,6 +264,7 @@ def evaluate(args, model, tokenizer, prefix="", eval_set='dev', save_aps=False):
         nb_eval_steps = 0
         preds = None
         out_label_ids = None
+        all_losses = []
         for batch in eval_dataloader:
             model.eval()
             batch = tuple(t.to(args.device) for t in batch)
@@ -275,6 +276,8 @@ def evaluate(args, model, tokenizer, prefix="", eval_set='dev', save_aps=False):
                           'labels':         batch[3]}
                 outputs = model(**inputs)
                 tmp_eval_loss, logits = outputs[:2]
+
+                all_losses.append(tmp_eval_loss.item())
 
                 eval_loss += tmp_eval_loss.mean().item()
             nb_eval_steps += 1
@@ -302,6 +305,11 @@ def evaluate(args, model, tokenizer, prefix="", eval_set='dev', save_aps=False):
                 for ap in aps:
                     f.write(str(ap)+"\n")
 
+            output_eval_file = os.path.join(eval_output_dir, "eval_losses_" + args.run_name)
+            with open(output_eval_file, "w") as f:
+                for loss in all_losses:
+                    f.write(str(loss)+"\n")
+
             output_eval_file = os.path.join(eval_output_dir, "preds_" + args.run_name)
             with open(output_eval_file, "w") as f:
                 for pred in preds:
@@ -317,16 +325,16 @@ def evaluate(args, model, tokenizer, prefix="", eval_set='dev', save_aps=False):
             with open(output_eval_file, "w") as f:
                 for avg in preds_q_docs_avg:
                     f.write(str(avg)+"\n")
-        else:
-            result = compute_metrics(eval_task, preds, out_label_ids)
-            results.update(result)
 
-            output_eval_file = os.path.join(eval_output_dir, "eval_results.txt")
-            with open(output_eval_file, "w") as writer:
-                logger.info("***** Eval results {} *****".format(prefix))
-                for key in sorted(result.keys()):
-                    logger.info("  %s = %s", key, str(result[key]))
-                    writer.write("%s = %s\n" % (key, str(result[key])))
+        result = compute_metrics(eval_task, preds, out_label_ids)
+        results.update(result)
+
+        output_eval_file = os.path.join(eval_output_dir, "eval_results.txt")
+        with open(output_eval_file, "w") as writer:
+            logger.info("***** Eval results {} *****".format(prefix))
+            for key in sorted(result.keys()):
+                logger.info("  %s = %s", key, str(result[key]))
+                writer.write("%s = %s\n" % (key, str(result[key])))
 
     return results
 

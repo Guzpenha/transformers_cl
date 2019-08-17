@@ -34,4 +34,5 @@ with open("res", 'r') as f:
 	print('\t'.join(final_res))
 	df = pd.DataFrame(df, columns = ["iter", "map", "curriculum"])
 	print(df)
+	print(df.groupby("curriculum")["map"].apply(max))
 	df.to_csv("eval_during_training_bert.csv", index=False)
