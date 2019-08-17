@@ -30,7 +30,7 @@ srun python ./examples/run_glue.py \
     --do_lower_case \
     --data_dir $DATA_DIR/$TASK_NAME \
     --max_seq_length 128 \
-    --per_gpu_eval_batch_size=$BATCH_SIZE  \
+    --per_gpu_eval_batch_size=10  \
     --per_gpu_train_batch_size=$BATCH_SIZE  \
     --learning_rate 2e-5 \
     --num_train_epochs $NUM_EPOCHS \

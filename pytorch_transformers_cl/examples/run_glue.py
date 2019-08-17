@@ -277,7 +277,7 @@ def evaluate(args, model, tokenizer, prefix="", eval_set='dev', save_aps=False):
                 outputs = model(**inputs)
                 tmp_eval_loss, logits = outputs[:2]
 
-                all_losses.append(tmp_eval_loss.item())
+                all_losses.append(tmp_eval_loss.mean().item())
 
                 eval_loss += tmp_eval_loss.mean().item()
             nb_eval_steps += 1
