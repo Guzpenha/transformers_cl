@@ -2,7 +2,7 @@
 
 #SBATCH --partition=general
 #SBATCH --qos=long
-#SBATCH --time=28:00:00
+#SBATCH --time=35:00:00
 #SBATCH --ntasks=1
 #SBATCH --cpus-per-task=1
 #SBATCH --gres=gpu:4
