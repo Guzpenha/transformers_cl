@@ -151,6 +151,7 @@ def train(args, train_dataset, model, tokenizer):
         assert epochs % len(data_loaders) == 0
         epochs = epochs/len(data_loaders)
 
+    percentage_data_by_epoch = 0.66
     set_seed(args)  # Added here for reproductibility (even between python 2 and 3)
     for loader_name, train_dataloader in data_loaders:
         for epoch_i in range(int(epochs)):
@@ -217,7 +218,7 @@ def train(args, train_dataset, model, tokenizer):
                         logger.info("Saving model checkpoint to %s", output_dir)
 
                 #this is needed because of the cycle we added to the train_loader
-                if(step == int(t_total/args.num_train_epochs)):
+                if(step == int( percentage_data_by_epoch * (t_total/args.num_train_epochs))):
                     logger.info("Finished epoch with " + str(step) + " iterations.")
                     break
                 if args.max_steps > 0 and global_step > args.max_steps:
