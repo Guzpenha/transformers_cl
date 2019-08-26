@@ -752,7 +752,7 @@ def compute_metrics(task_name, preds, labels):
         return {"acc": simple_accuracy(preds, labels)}
     elif task_name == "wnli":
         return {"acc": simple_accuracy(preds, labels)}
-    elif task_name == "mantis":
+    elif task_name == "mantis_10":
         return {"map": mean_average_precision(preds, labels)}
     elif task_name == "ms_v2":
         return {"map": mean_average_precision(preds, labels)}
@@ -772,7 +772,7 @@ processors = {
     "qnli": QnliProcessor,
     "rte": RteProcessor,
     "wnli": WnliProcessor,
-    "mantis":MantisProcessor,
+    "mantis_10":MantisProcessor,
     "ms_v2":MSDialogProcessor,
     "udc":UDCProcessor
 }
@@ -788,7 +788,7 @@ output_modes = {
     "qnli": "classification",
     "rte": "classification",
     "wnli": "classification",
-    "mantis": "classification",
+    "mantis_10": "classification",
     "ms_v2": "classification",
     "udc": "classification"
 }
@@ -803,7 +803,7 @@ GLUE_TASKS_NUM_LABELS = {
     "qnli": 2,
     "rte": 2,
     "wnli": 2,
-    "mantis": 2,
+    "mantis_10": 2,
     "ms_v2": 2,
     "udc": 2
 }

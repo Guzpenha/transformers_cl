@@ -218,8 +218,10 @@ def train(args, train_dataset, model, tokenizer):
                         logger.info("Saving model checkpoint to %s", output_dir)
 
                 #this is needed because of the cycle we added to the train_loader
-                if(step == int( percentage_data_by_epoch * (t_total/args.num_train_epochs))):
+                if step == int(percentage_data_by_epoch * (t_total/args.num_train_epochs)):
                     logger.info("Finished epoch with " + str(step) + " iterations.")
+                    if args.reset_clf_weights:
+                        model.classifier.weight.data.normal_(mean=0.0, std=0.02)
                     break
                 if args.max_steps > 0 and global_step > args.max_steps:
                     epoch_iterator.close()
@@ -292,7 +294,7 @@ def evaluate(args, model, tokenizer, prefix="", eval_set='dev', save_aps=False):
                 break
 
         eval_loss = eval_loss / nb_eval_steps
-        if args.task_name == "ms_v2" or args.task_name == "udc" or args.task_name == "mantis":
+        if args.task_name == "ms_v2" or args.task_name == "udc" or args.task_name == "mantis_10":
             preds = preds[:,1]
         elif args.output_mode == "classification":
             preds = np.argmax(preds, axis=1)
@@ -316,8 +318,12 @@ def evaluate(args, model, tokenizer, prefix="", eval_set='dev', save_aps=False):
                 for pred in preds:
                     f.write(str(pred)+"\n")
             # to check others neg_sampled size
-            negative_sampled_size = 10
-            assert args.task_name == "ms_v2"
+            if args.task_name == "ms_v2":
+                negative_sampled_size = 10
+            elif args.task_name == "mantis_10":
+                negative_sampled_size = 11
+
+            assert args.task_name == "ms_v2" or args.task_name == "mantis_10"
 
             preds_q_docs_avg = []
             for i in range(0,len(preds), negative_sampled_size):
@@ -475,6 +481,7 @@ def main():
     parser.add_argument("--save_aps", action='store_true',
                         help="Whether to save ap of each query.")
     parser.add_argument("--debug_mode", action='store_true')
+    parser.add_argument("--reset_clf_weights", action='store_true')
 
     args = parser.parse_args()
 
