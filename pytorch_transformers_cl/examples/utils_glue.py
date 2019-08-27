@@ -730,6 +730,56 @@ def compute_aps(preds, labels):
             aps.append(ap(query_labels, query_preds))
     return aps
 
+def ndcg(k=10):
+    def top_k(y_true, y_pred, rel_threshold=0.):
+        if k <= 0.:
+            return 0.
+        s = 0.
+        y_true = _to_list(np.squeeze(y_true).tolist())
+        y_pred = _to_list(np.squeeze(y_pred).tolist())
+        c = [v for v in zip(y_true, y_pred)]
+        random.shuffle(c)
+        c_g = sorted(c, key=lambda x:x[0], reverse=True)
+        c_p = sorted(c, key=lambda x:x[1], reverse=True)
+        idcg = 0.
+        ndcg = 0.
+        for i, (g,p) in enumerate(c_g):
+            if i >= k:
+                break
+            if g > rel_threshold:
+                idcg += (math.pow(2., g) - 1.) / math.log(2. + i)
+        for i, (g,p) in enumerate(c_p):
+            if i >= k:
+                break
+            if g > rel_threshold:
+                ndcg += (math.pow(2., g) - 1.) / math.log(2. + i)
+        if idcg == 0.:
+            return 0.
+        else:
+            return ndcg / idcg
+    return top_k
+
+def ndcg_at_10(preds, labels):
+    ndcgs = []
+    query_preds = []
+    query_labels = []
+    i=0
+    ndcg_at_10 = ndcg(k=10)
+    for l,p in zip(labels, preds):
+        if (l == 1 and i !=0):
+            ndcgs.append(ndcg_at_10(query_labels, query_preds))
+            query_preds=[]
+            query_labels=[]            
+
+        query_preds.append(p)
+        query_labels.append(l)
+
+        i+=1
+
+        if(i==len(preds)):
+            ndcgs.append(ndcg_at_10(query_labels, query_preds))
+    return sum(ndcgs)/float(len(ndcgs))
+
 def compute_metrics(task_name, preds, labels):
     assert len(preds) == len(labels)
     if task_name == "cola":
@@ -753,9 +803,9 @@ def compute_metrics(task_name, preds, labels):
     elif task_name == "wnli":
         return {"acc": simple_accuracy(preds, labels)}
     elif task_name == "mantis_10":
-        return {"map": mean_average_precision(preds, labels)}
+        return {"map": mean_average_precision(preds, labels)}#, "ndcg": ndcg_at_10(preds, labels)}
     elif task_name == "ms_v2":
-        return {"map": mean_average_precision(preds, labels)}
+        return {"map": mean_average_precision(preds, labels), "ndcg": ndcg_at_10(preds, labels)}
     elif task_name == "udc":
         return {"map": mean_average_precision(preds, labels)}
     else:

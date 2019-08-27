@@ -221,7 +221,10 @@ def train(args, train_dataset, model, tokenizer):
                 if step == int(percentage_data_by_epoch * (t_total/args.num_train_epochs)):
                     logger.info("Finished epoch with " + str(step) + " iterations.")
                     if args.reset_clf_weights:
-                        model.classifier.weight.data.normal_(mean=0.0, std=0.02)
+                        if type(model) == torch.nn.DataParallel:
+                            model.module.classifier.weight.data.normal_(mean=0.0, std=0.02)
+                        else:
+                            model.classifier.weight.data.normal_(mean=0.0, std=0.02)
                     break
                 if args.max_steps > 0 and global_step > args.max_steps:
                     epoch_iterator.close()
