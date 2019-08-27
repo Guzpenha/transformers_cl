@@ -42,8 +42,9 @@ from pytorch_transformers import AdamW, WarmupLinearSchedule
 
 from utils_glue import (compute_metrics, convert_examples_to_features,
                         output_modes, processors, read_curriculum_file, cycle,
-                        compute_aps)
+                        compute_aps, read_scores_file)
 
+from pacing_functions import (PACING_FUNCTIONS)
 from IPython import embed
 
 logger = logging.getLogger(__name__)
@@ -74,7 +75,39 @@ def train(args, train_dataset, model, tokenizer):
 
 
     data_loaders = []
-    if args.curriculum_file != "":
+    if args.pacing_function != "":
+        values_file = args.curriculum_file.split("_3")[0] + '_values_3'
+        logger.info("Using curriculum scoring values from file " + values_file)
+        instances_scores = read_scores_file(values_file)
+        
+        #some value files do not repeat the scoring function for each doc.
+        if len(instances_scores) != len(train_dataset):
+            candidates_per_q = len(train_dataset)/len(instances_scores)
+            filled_instances_scores = []
+            for v in instances_scores:
+                for i in range(int(candidates_per_q)):
+                    filled_instances_scores.append(v)
+            instances_scores = filled_instances_scores
+
+        assert len(instances_scores) == len(train_dataset)
+
+        c = [v for v in zip(instances_scores, train_dataset)]
+        c = sorted(c, key=lambda x:x[0], reverse=args.invert_cl_values)
+        ordered_train_dataset = [v[1] for v in c]
+        c0 = 0.33
+
+        train_data = ordered_train_dataset[0:int(c0*len(ordered_train_dataset))]
+        train_sampler = RandomSampler(train_data) if args.local_rank == -1 else DistributedSampler(train_data)
+        train_dataloader = DataLoader(train_data, sampler=train_sampler, batch_size=args.train_batch_size)
+        data_loaders.append(('pacing_function_'+args.pacing_function, train_dataloader))
+
+        if args.max_steps > 0:
+            t_total = args.max_steps
+            args.num_train_epochs = args.max_steps // (len(train_dataloader) // args.gradient_accumulation_steps) + 1
+        else:
+            t_total = len(train_dataloader) // args.gradient_accumulation_steps * args.num_train_epochs
+
+    elif args.curriculum_file != "":
         logger.info("Using curriculum from file " + args.curriculum_file)
         logger.info("Additive sets : " + str(args.use_additive_cl))
         cl_m = read_curriculum_file(args.curriculum_file)
@@ -157,7 +190,13 @@ def train(args, train_dataset, model, tokenizer):
         for epoch_i in range(int(epochs)):
             logger.info("Starting epoch " + str(epoch_i+1))
             logger.info("Training with " + loader_name)
-            for step, batch in enumerate(cycle(train_dataloader)):
+
+            step=0
+            while True:
+            # for step, batch in enumerate(cycle(train_dataloader)):
+                current_data_iter = iter(train_dataloader)                
+                batch = next(current_data_iter)
+
                 model.train()
                 batch = tuple(t.to(args.device) for t in batch)
                 inputs = {'input_ids':      batch[0],
@@ -203,6 +242,8 @@ def train(args, train_dataset, model, tokenizer):
                                 torch.save(args, os.path.join(output_dir, 'training_args.bin'))
                                 logger.info("Saving best model so far to %s", output_dir)
                                 logger.info("Iter = " + str(global_step))
+                                if args.pacing_function != "":
+                                    logger.info("Current data iter size: " + str(len(current_data_iter)))
                             tb_writer.add_scalar('lr', scheduler.get_lr()[0], global_step)
                             tb_writer.add_scalar('loss', (tr_loss - logging_loss)/args.logging_steps, global_step)
                             logging_loss = tr_loss
@@ -217,6 +258,12 @@ def train(args, train_dataset, model, tokenizer):
                         torch.save(args, os.path.join(output_dir, 'training_args.bin'))
                         logger.info("Saving model checkpoint to %s", output_dir)
 
+                if args.pacing_function != "":
+                    new_data_fraction = PACING_FUNCTIONS[args.pacing_function](step, percentage_data_by_epoch * t_total, c0)
+                    train_data = ordered_train_dataset[0:int(new_data_fraction*len(ordered_train_dataset))]
+                    train_sampler = RandomSampler(train_data) if args.local_rank == -1 else DistributedSampler(train_data)
+                    train_dataloader = DataLoader(train_data, sampler=train_sampler, batch_size=args.train_batch_size)
+
                 #this is needed because of the cycle we added to the train_loader
                 if step == int(percentage_data_by_epoch * (t_total/args.num_train_epochs)):
                     logger.info("Finished epoch with " + str(step) + " iterations.")
@@ -229,13 +276,19 @@ def train(args, train_dataset, model, tokenizer):
                 if args.max_steps > 0 and global_step > args.max_steps:
                     epoch_iterator.close()
                     break
+
+                step+=1
+                #end of a batch
                 if args.debug_mode:
                     break
             if args.max_steps > 0 and global_step > args.max_steps:
                 train_iterator.close()
                 break
+            #end of an epoch
             if args.debug_mode:
                 break
+
+        #end of a curriculum data shard
         if args.debug_mode:
             break
 
@@ -484,11 +537,15 @@ def main():
     parser.add_argument("--save_aps", action='store_true',
                         help="Whether to save ap of each query.")
     parser.add_argument("--debug_mode", action='store_true')
-    parser.add_argument("--reset_clf_weights", action='store_true')
+    parser.add_argument("--reset_clf_weights", action='store_true', 
+        help="whether to reset the classification head of BERT between curriculum shards or not")
+    parser.add_argument("--pacing_function", default="", type=str, 
+        help="Use one of the predefined pacing functions instead of shards (requires a values curriculum_file)")
+    parser.add_argument("--invert_cl_values", action='store_true')
 
     args = parser.parse_args()
 
-    args.run_name = "run_cl_"+args.curriculum_file.split(args.task_name)[-1]+"_seed_"+str(args.seed)
+    args.run_name = "run_cl_"+args.curriculum_file.split(args.task_name)[-1]+args.pacing_function+"_seed_"+str(args.seed)
 
     if os.path.exists(args.output_dir) and os.listdir(args.output_dir) and args.do_train and not args.overwrite_output_dir:
         raise ValueError("Output directory ({}) already exists and is not empty. Use --overwrite_output_dir to overcome.".format(args.output_dir))

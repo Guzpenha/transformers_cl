@@ -671,6 +671,11 @@ def read_curriculum_file(path):
             idxs[label].append(i)
     return idxs
 
+def read_scores_file(path):    
+    with open(path,'r') as f:
+        scores = [float(l.split("\n")[0]) for l in f.readlines()]
+    return scores
+
 def ap(y_true, y_pred, rel_threshold=0):
     s = 0.
     y_true = _to_list(np.squeeze(y_true).tolist())
