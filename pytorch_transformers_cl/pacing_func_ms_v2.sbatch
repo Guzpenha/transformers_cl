@@ -21,7 +21,7 @@ DATA_DIR=/tudelft.net/staff-umbrella/domaincss/wsdm19/bert_ranker/data
 
 source /home/nfs/gustavopenha/env_transformers/bin/activate
 
-for PACING_FUNCTION in 'step' 'linear' 'root-2' 'root-5' 'quadratic' 'cubic'
+for PACING_FUNCTION in 'step' 'linear' 'root_2' 'root_5' 'quadratic' 'cubic'
 do
     srun python ./examples/run_glue.py \
         --model_type bert \

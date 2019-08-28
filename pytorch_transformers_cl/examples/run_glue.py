@@ -101,11 +101,13 @@ def train(args, train_dataset, model, tokenizer):
         train_dataloader = DataLoader(train_data, sampler=train_sampler, batch_size=args.train_batch_size)
         data_loaders.append(('pacing_function_'+args.pacing_function, train_dataloader))
 
+        s_for_count_only = RandomSampler(ordered_train_dataset) if args.local_rank == -1 else DistributedSampler(ordered_train_dataset)
+        t_for_count_only = DataLoader(ordered_train_dataset, sampler=s_for_count_only, batch_size=args.train_batch_size)
         if args.max_steps > 0:
             t_total = args.max_steps
-            args.num_train_epochs = args.max_steps // (len(train_dataloader) // args.gradient_accumulation_steps) + 1
+            args.num_train_epochs = args.max_steps // (len(t_for_count_only) // args.gradient_accumulation_steps) + 1
         else:
-            t_total = len(train_dataloader) // args.gradient_accumulation_steps * args.num_train_epochs
+            t_total = len(t_for_count_only) // args.gradient_accumulation_steps * args.num_train_epochs
 
     elif args.curriculum_file != "":
         logger.info("Using curriculum from file " + args.curriculum_file)
