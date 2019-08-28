@@ -350,7 +350,8 @@ def evaluate(args, model, tokenizer, prefix="", eval_set='dev', save_aps=False):
                 break
 
         eval_loss = eval_loss / nb_eval_steps
-        if args.task_name == "ms_v2" or args.task_name == "udc" or args.task_name == "mantis_10":
+        if args.task_name == "ms_v2" or args.task_name == "udc" or \
+            args.task_name == "mantis_10" or args.task_name == "mantis_50":
             preds = preds[:,1]
         elif args.output_mode == "classification":
             preds = np.argmax(preds, axis=1)
@@ -383,7 +384,7 @@ def evaluate(args, model, tokenizer, prefix="", eval_set='dev', save_aps=False):
 
             preds_q_docs_avg = []
             for i in range(0,len(preds), negative_sampled_size):
-                preds_q_docs_avg.append(sum(preds[i:i+10])/negative_sampled_size)
+                preds_q_docs_avg.append(sum(preds[i:i+negative_sampled_size])/negative_sampled_size)
             output_eval_file = os.path.join(eval_output_dir, "avg_confidence_scores_"+args.run_name)
             with open(output_eval_file, "w") as f:
                 for avg in preds_q_docs_avg:
