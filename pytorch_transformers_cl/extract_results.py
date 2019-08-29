@@ -19,7 +19,7 @@ os.system("cat "+args.slurm_file+" | grep -Po 'map = \\K\\d+.\\d+' > res")
 print("cat "+args.slurm_file+" | grep -Po 'map = \\K\\d+.\\d+' > res")
 sets = ["random_batches", "turns", "query_length", \
 		"doc_length", "exact_match", "semantic_match",\
-		 "map_exact_match", "map_semantic_match", "avg_bert_score",\
+		 "avg_bert_score",\
 		 "avg_bert_loss"]
 set_idx = 0
 df = []
