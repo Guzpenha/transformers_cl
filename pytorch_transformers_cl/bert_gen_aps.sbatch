@@ -42,7 +42,11 @@ source /home/nfs/gustavopenha/env_transformers/bin/activate
 #     --seed $RANDOM_SEED \
 #     --save_aps
 
+
+NUM_EPOCHS=1.0
+LOGGING_STEPS=400
 TASK_NAME=mantis_10
+
 srun python ./examples/run_glue.py \
     --model_type bert \
     --model_name_or_path bert-base-uncased \
@@ -62,4 +66,5 @@ srun python ./examples/run_glue.py \
     --logging_steps $LOGGING_STEPS \
     --eval_all_checkpoints \
     --seed $RANDOM_SEED \
-    --save_aps
+    --save_aps \
+    --percentage_data_by_epoch 0.40
