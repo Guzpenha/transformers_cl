@@ -175,6 +175,7 @@ def train(args, train_dataset, model, tokenizer):
                    args.train_batch_size * args.gradient_accumulation_steps * (torch.distributed.get_world_size() if args.local_rank != -1 else 1))
     logger.info("  Gradient Accumulation steps = %d", args.gradient_accumulation_steps)
     logger.info("  Total optimization steps = %d", t_total)
+    logger.info("  percentage by epoch = %f", args.percentage_data_by_epoch)
     logger.info("  data_loaders = %s", data_loaders)
     global_step = 0
     tr_loss, logging_loss = 0.0, 0.0
@@ -186,7 +187,6 @@ def train(args, train_dataset, model, tokenizer):
         assert epochs % len(data_loaders) == 0
         epochs = epochs/len(data_loaders)
 
-    percentage_data_by_epoch = 0.66
     set_seed(args)  # Added here for reproductibility (even between python 2 and 3)
     for loader_name, train_dataloader in data_loaders:
         for epoch_i in range(int(epochs)):
@@ -261,13 +261,13 @@ def train(args, train_dataset, model, tokenizer):
                         logger.info("Saving model checkpoint to %s", output_dir)
 
                 if args.pacing_function != "":
-                    new_data_fraction = PACING_FUNCTIONS[args.pacing_function](step, percentage_data_by_epoch * t_total, c0)
+                    new_data_fraction = PACING_FUNCTIONS[args.pacing_function](step, args.percentage_data_by_epoch * t_total, c0)
                     train_data = ordered_train_dataset[0:int(new_data_fraction*len(ordered_train_dataset))]
                     train_sampler = RandomSampler(train_data) if args.local_rank == -1 else DistributedSampler(train_data)
                     train_dataloader = DataLoader(train_data, sampler=train_sampler, batch_size=args.train_batch_size)
 
                 #this is needed because of the cycle we added to the train_loader
-                if step == int(percentage_data_by_epoch * (t_total/args.num_train_epochs)):
+                if step == int(args.percentage_data_by_epoch * (t_total/args.num_train_epochs)):
                     logger.info("Finished epoch with " + str(step) + " iterations.")
                     if args.reset_clf_weights:
                         if type(model) == torch.nn.DataParallel:
@@ -545,6 +545,7 @@ def main():
     parser.add_argument("--pacing_function", default="", type=str, 
         help="Use one of the predefined pacing functions instead of shards (requires a values curriculum_file)")
     parser.add_argument("--invert_cl_values", action='store_true')
+    parser.add_argument("--percentage_data_by_epoch", default=0.66, type=float)
 
     args = parser.parse_args()
 

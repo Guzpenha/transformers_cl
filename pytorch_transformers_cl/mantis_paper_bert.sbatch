@@ -13,9 +13,9 @@ module use /opt/insy/modulefiles
 module load cuda/10.0 cudnn/10.0-7.4.2.24
 
 TASK_NAME=mantis_10
-NUM_EPOCHS=3.0
+NUM_EPOCHS=1.0
 BATCH_SIZE=32
-LOGGING_STEPS=50
+LOGGING_STEPS=400
 DATA_DIR=/tudelft.net/staff-umbrella/domaincss/wsdm19/bert_ranker/data
 
 source /home/nfs/gustavopenha/env_transformers/bin/activate
@@ -40,7 +40,8 @@ do
         --overwrite_output_dir \
         --logging_steps $LOGGING_STEPS \
         --eval_all_checkpoints \
-        --seed $RANDOM_SEED
+        --seed $RANDOM_SEED \
+        --percentage_data_by_epoch 0.40
 done
 
 TASK_NAME=mantis_50
@@ -64,5 +65,6 @@ do
         --overwrite_output_dir \
         --logging_steps $LOGGING_STEPS \
         --eval_all_checkpoints \
-        --seed $RANDOM_SEED
+        --seed $RANDOM_SEED \
+        --percentage_data_by_epoch 0.2
 done
