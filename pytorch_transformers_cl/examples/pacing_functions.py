@@ -23,11 +23,15 @@ def step(x, t, c0):
 	else:
 		return 1
 
+def standard_training(x, t, c0):
+	return 1
+
 PACING_FUNCTIONS = {
 	'linear': linear,
 	'root_2': root_2,
 	'root_5': root_5,
 	'quadratic': quadratic,
 	'cubic': cubic,
-	'step': step
+	'step': step,
+	'standard_training': standard_training
 }
