@@ -9,6 +9,9 @@ def root_2(x, t, c0):
 def root_5(x, t, c0):
 	return ((x* ((1-(c0**5.0))/t)) + (c0**5.0))**(1./5)
 
+def root_10(x, t, c0):
+	return ((x* ((1-(c0**10.0))/t)) + (c0**10.0))**(1./10)
+
 def quadratic(x, t, c0):
 	return (x* ((1-c0**1.54)/t))**2 + c0
 
@@ -30,6 +33,7 @@ PACING_FUNCTIONS = {
 	'linear': linear,
 	'root_2': root_2,
 	'root_5': root_5,
+	'root_10': root_10,
 	'quadratic': quadratic,
 	'cubic': cubic,
 	'step': step,

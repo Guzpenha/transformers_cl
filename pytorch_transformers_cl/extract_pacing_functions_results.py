@@ -17,7 +17,7 @@ args = parser.parse_args()
 os.system("rm res")
 os.system("cat "+args.slurm_file+" | grep -Po 'map = \\K\\d+.\\d+' > res")
 print("cat "+args.slurm_file+" | grep -Po 'map = \\K\\d+.\\d+' > res")
-sets = ['step', 'linear', 'root_2', 'root_5', 'quadratic', 'cubic']
+sets = ['standard_training','step', 'linear', 'root_2', 'root_5', 'root_10', 'quadratic', 'cubic']
 set_idx = 0
 df = []
 with open("res", 'r') as f:
