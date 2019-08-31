@@ -195,7 +195,6 @@ def train(args, train_dataset, model, tokenizer):
 
             step=0
             while True:
-            # for step, batch in enumerate(cycle(train_dataloader)):
                 current_data_iter = iter(train_dataloader)                
                 batch = next(current_data_iter)
 
@@ -261,8 +260,8 @@ def train(args, train_dataset, model, tokenizer):
                         logger.info("Saving model checkpoint to %s", output_dir)
 
                 if args.pacing_function != "":
-                    curriculum_iterations = t_total * 0.8
-                    new_data_fraction = min(1,PACING_FUNCTIONS[args.pacing_function](step, args.percentage_data_by_epoch * curriculum_iterations, c0))
+                    curriculum_iterations = (t_total * args.percentage_data_by_epoch) * 0.8
+                    new_data_fraction = min(1,PACING_FUNCTIONS[args.pacing_function](global_step, curriculum_iterations, c0))
                     train_data = ordered_train_dataset[0:int(new_data_fraction*len(ordered_train_dataset))]
                     train_sampler = RandomSampler(train_data) if args.local_rank == -1 else DistributedSampler(train_data)
                     train_dataloader = DataLoader(train_data, sampler=train_sampler, batch_size=args.train_batch_size)
