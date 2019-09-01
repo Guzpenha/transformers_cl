@@ -27,9 +27,9 @@ with open("res", 'r') as f:
 	results = [r.strip() for r in f.readlines()]
 	final_res = []
 	for i,v in enumerate(results):
-		if (i+1) % 54 != 0:
-			df.append([str((i+1) % 54) , v ,sets[set_idx]])
-			# print(str((i+1) % 54) + "\t" + v + "\t" +sets[set_idx])
+		if (i+1) % 108 != 0:
+			df.append([str((i+1) % 108) , v ,sets[set_idx]])
+			# print(str((i+1) % 108) + "\t" + v + "\t" +sets[set_idx])
 		else :
 			final_res.append(v)
 			set_idx+=1
