@@ -181,6 +181,11 @@ class MantisProcessor(DataProcessor):
         return self._create_examples(
             self._read_tsv(os.path.join(data_dir, "test.txt")), "test")
 
+    def get_test_examples_difficult(self, data_dir):
+        """See base class."""
+        return self._create_examples(
+            self._read_tsv(os.path.join(data_dir, "test_50.txt")), "test_50")
+
     def get_labels(self):
         """See base class."""
         return ["0", "1"]

@@ -263,7 +263,8 @@ def train(args, train_dataset, model, tokenizer):
                         logger.info("Saving model checkpoint to %s", output_dir)
 
                 if args.pacing_function != "":
-                    curriculum_iterations = (t_total * args.percentage_data_by_epoch) * 0.8
+                    percentage_curriculum_iter = 0.90
+                    curriculum_iterations = (t_total * args.percentage_data_by_epoch) * percentage_curriculum_iter
                     new_data_fraction = min(1,PACING_FUNCTIONS[args.pacing_function](global_step, curriculum_iterations, c0))
                     train_data = ordered_train_dataset[0:int(new_data_fraction*len(ordered_train_dataset))]
                     train_sampler = RandomSampler(train_data) if args.local_rank == -1 else DistributedSampler(train_data)
@@ -428,7 +429,12 @@ def load_and_cache_examples(args, task, tokenizer, instances_set='train'):
         elif instances_set == 'train':
             examples = processor.get_train_examples(args.data_dir)
         elif instances_set == 'test':
-            examples = processor.get_test_examples(args.data_dir)
+            if args.eval_difficult:
+                examples = processor.get_test_examples(args.data_dir)
+            else:
+                assert args.task_name == 'mantis_10':
+                examples = processor.get_test_examples_difficult(args.data_dir)
+
 
         features = convert_examples_to_features(examples, label_list, args.max_seq_length, tokenizer, output_mode,
             cls_token_at_end=bool(args.model_type in ['xlnet']),            # xlnet has a cls token at the end
@@ -549,6 +555,7 @@ def main():
         help="Use one of the predefined pacing functions instead of shards (requires a values curriculum_file)")
     parser.add_argument("--invert_cl_values", action='store_true')
     parser.add_argument("--percentage_data_by_epoch", default=0.66, type=float)
+    parser.add_argument("--eval_difficult", action='store_true', help="Use difficult test set (only available for mantis)")
 
     args = parser.parse_args()
 

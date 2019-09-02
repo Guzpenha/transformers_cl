@@ -2,7 +2,7 @@
 
 #SBATCH --partition=general
 #SBATCH --qos=long
-#SBATCH --time=35:00:00
+#SBATCH --time=25:00:00
 #SBATCH --ntasks=1
 #SBATCH --cpus-per-task=1
 #SBATCH --gres=gpu:4
@@ -20,7 +20,7 @@ DATA_DIR=/tudelft.net/staff-umbrella/domaincss/wsdm19/bert_ranker/data
 
 source /home/nfs/gustavopenha/env_transformers/bin/activate
 
-for PACING_FUNCTION in 'standard_training' 'step' 'linear' 'root_2' 'root_5' 'root_10' 'quadratic' 'cubic'
+for PACING_FUNCTION in 'standard_training' 'geom_progression' 'step' 'linear' 'root_2' 'root_5' 'root_10' 'root_20'
 do
     srun python ./examples/run_glue.py \
         --model_type bert \
