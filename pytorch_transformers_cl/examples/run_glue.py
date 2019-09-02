@@ -432,7 +432,7 @@ def load_and_cache_examples(args, task, tokenizer, instances_set='train'):
             if args.eval_difficult:
                 examples = processor.get_test_examples(args.data_dir)
             else:
-                assert args.task_name == 'mantis_10':
+                assert args.task_name == 'mantis_10'
                 examples = processor.get_test_examples_difficult(args.data_dir)
 
 
