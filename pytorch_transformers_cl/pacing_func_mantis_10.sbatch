@@ -13,10 +13,11 @@ module use /opt/insy/modulefiles
 module load cuda/10.0 cudnn/10.0-7.4.2.24
 
 TASK_NAME=ms_v2
-NUM_EPOCHS=3.0
+NUM_EPOCHS=1
 BATCH_SIZE=32
-LOGGING_STEPS=25
+LOGGING_STEPS=200
 DATA_DIR=/tudelft.net/staff-umbrella/domaincss/wsdm19/bert_ranker/data
+PERCT_BY_EPOCH=0.20
 
 source /home/nfs/gustavopenha/env_transformers/bin/activate
 
@@ -43,5 +44,6 @@ do
         --eval_all_checkpoints \
         --seed $RANDOM_SEED \
         --use_additive_cl \
-        --pacing_function $PACING_FUNCTION
+        --pacing_function $PACING_FUNCTION \
+        --percentage_data_by_epoch $PERCT_BY_EPOCH
 done

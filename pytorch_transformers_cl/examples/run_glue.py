@@ -412,6 +412,8 @@ def evaluate(args, model, tokenizer, prefix="", eval_set='dev', save_aps=False):
 def load_and_cache_examples(args, task, tokenizer, instances_set='train'):
     processor = processors[task]()
     output_mode = output_modes[task]
+    if args.eval_difficult:
+        instances_set='test_50'
     # Load data features from cache or dataset file
     cached_features_file = os.path.join(args.data_dir, 'cached_{}_{}_{}_{}'.format(
         instances_set,
@@ -430,10 +432,9 @@ def load_and_cache_examples(args, task, tokenizer, instances_set='train'):
             examples = processor.get_train_examples(args.data_dir)
         elif instances_set == 'test':
             if args.eval_difficult:
-                examples = processor.get_test_examples(args.data_dir)
-            else:
-                assert args.task_name == 'mantis_10'
                 examples = processor.get_test_examples_difficult(args.data_dir)
+            else:
+                examples = processor.get_test_examples(args.data_dir)
 
 
         features = convert_examples_to_features(examples, label_list, args.max_seq_length, tokenizer, output_mode,
