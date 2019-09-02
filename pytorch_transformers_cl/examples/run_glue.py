@@ -431,10 +431,9 @@ def load_and_cache_examples(args, task, tokenizer, instances_set='train'):
         elif instances_set == 'train':
             examples = processor.get_train_examples(args.data_dir)
         elif instances_set == 'test':
-            if args.eval_difficult:
-                examples = processor.get_test_examples_difficult(args.data_dir)
-            else:
-                examples = processor.get_test_examples(args.data_dir)
+            examples = processor.get_test_examples(args.data_dir)
+        elif instances_set == 'test_50':
+            examples = processor.get_test_examples_difficult(args.data_dir)
 
 
         features = convert_examples_to_features(examples, label_list, args.max_seq_length, tokenizer, output_mode,
