@@ -12,6 +12,12 @@ parser.add_argument("--slurm_file",
                     required=True,
                     help="")
 
+parser.add_argument("--run",
+                    default=None,
+                    type=str,
+                    required=True,
+                    help="")
+
 args = parser.parse_args()
 
 os.system("rm res")
@@ -39,4 +45,4 @@ with open("res", 'r') as f:
 	df = pd.DataFrame(df, columns = ["iter", "map", "curriculum"])
 	print(df)
 	print(df.groupby("curriculum")["map"].apply(max))
-	df.to_csv("eval_during_training_bert.csv", index=False)
+	df.to_csv("eval_during_training_bert_"+args.run+".csv", index=False)
