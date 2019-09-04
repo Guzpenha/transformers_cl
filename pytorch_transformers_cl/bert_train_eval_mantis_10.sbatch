@@ -5,7 +5,7 @@
 #SBATCH --time=25:00:00
 #SBATCH --ntasks=1
 #SBATCH --cpus-per-task=1
-#SBATCH --gres=gpu:1
+#SBATCH --gres=gpu:2
 #SBATCH --mem-per-cpu=8000
 #SBATCH --mail-type=END
 
@@ -17,7 +17,7 @@ NUM_EPOCHS=1
 BATCH_SIZE=32
 LOGGING_STEPS=200
 DATA_DIR=/tudelft.net/staff-umbrella/domaincss/wsdm19/bert_ranker/data
-PACING_FUNCTION=root_5
+PACING_FUNCTION=geom_progression
 PERCT_BY_EPOCH=0.20
 
 source /home/nfs/gustavopenha/env_transformers/bin/activate
