@@ -12,7 +12,7 @@
 module use /opt/insy/modulefiles
 module load cuda/10.0 cudnn/10.0-7.4.2.24
 
-TASK_NAME=ms_v2
+TASK_NAME=mantis_10
 NUM_EPOCHS=1
 BATCH_SIZE=32
 LOGGING_STEPS=200
