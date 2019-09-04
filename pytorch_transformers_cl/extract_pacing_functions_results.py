@@ -31,9 +31,9 @@ with open("res", 'r') as f:
 	results = [r.strip() for r in f.readlines()]
 	final_res = []
 	for i,v in enumerate(results):
-		if (i+1) % 36 != 0:
-			df.append([str((i+1) % 36) , v ,sets[set_idx]])
-			# print(str((i+1) % 36) + "\t" + v + "\t" +sets[set_idx])
+		if (i+1) % 18 != 0:
+			df.append([str((i+1) % 18) , v ,sets[set_idx]])
+			# print(str((i+1) % 18) + "\t" + v + "\t" +sets[set_idx])
 		else :
 			final_res.append(v)
 			set_idx+=1
