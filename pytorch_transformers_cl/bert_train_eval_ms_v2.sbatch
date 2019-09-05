@@ -17,7 +17,7 @@ NUM_EPOCHS=2.0
 BATCH_SIZE=32
 LOGGING_STEPS=200
 DATA_DIR=/tudelft.net/staff-umbrella/domaincss/wsdm19/bert_ranker/data
-PACING_FUNCTION=geom_progression
+PACING_FUNCTION=root_2
 
 source /home/nfs/gustavopenha/env_transformers/bin/activate
 
