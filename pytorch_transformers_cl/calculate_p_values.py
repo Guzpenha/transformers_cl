@@ -17,8 +17,8 @@ args = parser.parse_args()
 
 path_dataset = path+args.dataset+"_output/"
 final_str = ""
-pacing_func = "geom_progression"
-for seed in ['1','2','3','4']:
+pacing_func = "root_2"
+for seed in ['1','2','3','4','5']:
 	baseline = pd.read_csv(path_dataset+'aps_run_cl__random_c_3'+pacing_func+'_seed_'+seed, names=['ap'])
 	final_str += str(round(baseline.mean().values[0],4))+ "\t"
 	for competing_scoring in ['_turns_c_3'+pacing_func, '_utt_avg_words_c_3'+pacing_func,\

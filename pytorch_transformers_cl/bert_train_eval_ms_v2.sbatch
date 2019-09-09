@@ -5,7 +5,7 @@
 #SBATCH --time=25:00:00
 #SBATCH --ntasks=1
 #SBATCH --cpus-per-task=1
-#SBATCH --gres=gpu:2
+#SBATCH --gres=gpu:3
 #SBATCH --mem-per-cpu=8000
 #SBATCH --mail-type=END
 
@@ -158,52 +158,6 @@ srun python ./examples/run_glue.py \
     --seed $RANDOM_SEED \
     --use_additive_cl \
     --pacing_function $PACING_FUNCTION
-
-# srun python ./examples/run_glue.py \
-#     --model_type bert \
-#     --model_name_or_path bert-base-uncased \
-#     --task_name $TASK_NAME \
-#     --do_train \
-#     --do_eval \
-#     --do_lower_case \
-#     --data_dir $DATA_DIR/$TASK_NAME \
-#     --max_seq_length 128 \
-#     --per_gpu_eval_batch_size=$BATCH_SIZE  \
-#     --per_gpu_train_batch_size=$BATCH_SIZE  \
-#     --learning_rate 2e-5 \
-#     --num_train_epochs $NUM_EPOCHS \
-#     --output_dir $DATA_DIR/${TASK_NAME}_output \
-#     --evaluate_during_training \
-#     --overwrite_output_dir \
-#     --logging_steps $LOGGING_STEPS \
-#     --curriculum_file $DATA_DIR/$TASK_NAME/${TASK_NAME}_map_exact_match_q_d_rel_c_3 \
-#     --eval_all_checkpoints \
-#     --seed $RANDOM_SEED \
-    # --use_additive_cl \
-    # --pacing_function $PACING_FUNCTION
-
-# srun python ./examples/run_glue.py \
-#     --model_type bert \
-#     --model_name_or_path bert-base-uncased \
-#     --task_name $TASK_NAME \
-#     --do_train \
-#     --do_eval \
-#     --do_lower_case \
-#     --data_dir $DATA_DIR/$TASK_NAME \
-#     --max_seq_length 128 \
-#     --per_gpu_eval_batch_size=$BATCH_SIZE  \
-#     --per_gpu_train_batch_size=$BATCH_SIZE  \
-#     --learning_rate 2e-5 \
-#     --num_train_epochs $NUM_EPOCHS \
-#     --output_dir $DATA_DIR/${TASK_NAME}_output \
-#     --evaluate_during_training \
-#     --overwrite_output_dir \
-#     --logging_steps $LOGGING_STEPS \
-#     --curriculum_file $DATA_DIR/$TASK_NAME/${TASK_NAME}_map_semantic_match_q_d_rel_c_3 \
-#     --eval_all_checkpoints \
-#     --seed $RANDOM_SEED \
-# --use_additive_cl \
-    # --pacing_function $PACING_FUNCTION
 
 srun python ./examples/run_glue.py \
     --model_type bert \
