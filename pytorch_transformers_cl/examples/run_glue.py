@@ -385,8 +385,8 @@ def evaluate(args, model, tokenizer, prefix="", eval_set='dev', save_aps=False):
                 negative_sampled_size = 10
             elif args.task_name == "mantis_10":
                 negative_sampled_size = 11
-
-            assert args.task_name == "ms_v2" or args.task_name == "mantis_10"
+            elif args.task_name == "udc":
+                negative_sampled_size = 2
 
             preds_q_docs_avg = []
             for i in range(0,len(preds), negative_sampled_size):
