@@ -43,9 +43,35 @@ source /home/nfs/gustavopenha/env_transformers/bin/activate
 #     --save_aps
 
 
+# NUM_EPOCHS=1.0
+# LOGGING_STEPS=400
+# TASK_NAME=mantis_10
+
+# srun python ./examples/run_glue.py \
+#     --model_type bert \
+#     --model_name_or_path bert-base-uncased \
+#     --task_name $TASK_NAME \
+#     --do_train \
+#     --do_eval \
+#     --do_lower_case \
+#     --data_dir $DATA_DIR/$TASK_NAME \
+#     --max_seq_length 128 \
+#     --per_gpu_eval_batch_size=11  \
+#     --per_gpu_train_batch_size=$BATCH_SIZE  \
+#     --learning_rate 2e-5 \
+#     --num_train_epochs $NUM_EPOCHS \
+#     --output_dir $DATA_DIR/${TASK_NAME}_output \
+#     --evaluate_during_training \
+#     --overwrite_output_dir \
+#     --logging_steps $LOGGING_STEPS \
+#     --eval_all_checkpoints \
+#     --seed $RANDOM_SEED \
+#     --save_aps \
+#     --percentage_data_by_epoch 0.40
+
 NUM_EPOCHS=1.0
 LOGGING_STEPS=400
-TASK_NAME=mantis_10
+TASK_NAME=udc
 
 srun python ./examples/run_glue.py \
     --model_type bert \
@@ -56,7 +82,7 @@ srun python ./examples/run_glue.py \
     --do_lower_case \
     --data_dir $DATA_DIR/$TASK_NAME \
     --max_seq_length 128 \
-    --per_gpu_eval_batch_size=11  \
+    --per_gpu_eval_batch_size=2  \
     --per_gpu_train_batch_size=$BATCH_SIZE  \
     --learning_rate 2e-5 \
     --num_train_epochs $NUM_EPOCHS \
