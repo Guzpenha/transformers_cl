@@ -81,7 +81,7 @@ def train(args, train_dataset, model, tokenizer):
         logger.info("Using curriculum scoring values from file " + values_file)
         if 'random' in values_file:
             logger.info("Randomizing values for random scoring function.")
-            instances_scores = random.sample(range(len(instances_scores)), len(instances_scores))
+            instances_scores = random.sample(range(len(train_dataset)), len(train_dataset))
         else:
             instances_scores = read_scores_file(values_file)
 
