@@ -235,6 +235,11 @@ def train(args, train_dataset, model, tokenizer):
                     if args.local_rank in [-1, 0] and args.logging_steps > 0 and global_step % args.logging_steps == 0:
                         # Log metrics
                         if args.local_rank == -1 and args.evaluate_during_training:  # Only evaluate when single GPU otherwise metrics may not average well
+                            logger.info("Iter = " + str(global_step))
+                            logger.info("lr = " + str(scheduler.get_lr()[0]))
+                            logger.info("loss = " + str((tr_loss - logging_loss)/args.logging_steps))
+                            if args.pacing_function != "":
+                                logger.info("Current data iter size: " + str(len(current_data_iter)))
                             results = evaluate(args, model, tokenizer)
                             for key, value in results.items():
                                 tb_writer.add_scalar('eval_{}'.format(key), value, global_step)
@@ -247,9 +252,6 @@ def train(args, train_dataset, model, tokenizer):
                                 model_to_save.save_pretrained(output_dir)
                                 torch.save(args, os.path.join(output_dir, 'training_args.bin'))
                                 logger.info("Saving best model so far to %s", output_dir)
-                                logger.info("Iter = " + str(global_step))
-                                if args.pacing_function != "":
-                                    logger.info("Current data iter size: " + str(len(current_data_iter)))
                             tb_writer.add_scalar('lr', scheduler.get_lr()[0], global_step)
                             tb_writer.add_scalar('loss', (tr_loss - logging_loss)/args.logging_steps, global_step)
                             logging_loss = tr_loss
