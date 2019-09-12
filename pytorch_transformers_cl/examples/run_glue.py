@@ -79,10 +79,11 @@ def train(args, train_dataset, model, tokenizer):
     if args.pacing_function != "":
         values_file = args.curriculum_file.split("_3")[0] + '_values_3'
         logger.info("Using curriculum scoring values from file " + values_file)
-        instances_scores = read_scores_file(values_file)
         if 'random' in values_file:
             logger.info("Randomizing values for random scoring function.")
             instances_scores = random.sample(range(len(instances_scores)), len(instances_scores))
+        else:
+            instances_scores = read_scores_file(values_file)
 
         #some value files do not repeat the scoring function for each doc.
         if len(instances_scores) != len(train_dataset):
