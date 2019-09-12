@@ -320,7 +320,10 @@ def evaluate(args, model, tokenizer, prefix="", eval_set='dev', save_aps=False):
         if not os.path.exists(eval_output_dir) and args.local_rank in [-1, 0]:
             os.makedirs(eval_output_dir)
 
-        args.eval_batch_size = args.per_gpu_eval_batch_size * max(1, args.n_gpu)
+        if eval_set == 'train' and save_aps: #for getting the correct losses for each query
+            args.eval_batch_size = 2
+        else:
+            args.eval_batch_size = args.per_gpu_eval_batch_size * max(1, args.n_gpu)
         # Note that DistributedSampler samples randomly
         eval_sampler = SequentialSampler(eval_dataset)
         eval_dataloader = DataLoader(eval_dataset, sampler=eval_sampler, batch_size=args.eval_batch_size)
