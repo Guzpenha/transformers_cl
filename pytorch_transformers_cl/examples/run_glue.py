@@ -46,6 +46,7 @@ from utils_glue import (compute_metrics, convert_examples_to_features,
 
 from pacing_functions import (PACING_FUNCTIONS)
 from IPython import embed
+from scipy.special import softmax
 
 logger = logging.getLogger(__name__)
 
@@ -318,7 +319,7 @@ def evaluate(args, model, tokenizer, prefix="", eval_set='dev', save_aps=False):
 
         args.eval_batch_size = args.per_gpu_eval_batch_size * max(1, args.n_gpu)
         # Note that DistributedSampler samples randomly
-        eval_sampler = SequentialSampler(eval_dataset) if args.local_rank == -1 else DistributedSampler(eval_dataset)
+        eval_sampler = SequentialSampler(eval_dataset)
         eval_dataloader = DataLoader(eval_dataset, sampler=eval_sampler, batch_size=args.eval_batch_size)
 
         # Eval!
@@ -358,6 +359,7 @@ def evaluate(args, model, tokenizer, prefix="", eval_set='dev', save_aps=False):
         eval_loss = eval_loss / nb_eval_steps
         if args.task_name == "ms_v2" or args.task_name == "udc" or \
             args.task_name == "mantis_10" or args.task_name == "mantis_50":
+            preds = softmax(preds,axis=1)
             preds = preds[:,1]
         elif args.output_mode == "classification":
             preds = np.argmax(preds, axis=1)
@@ -371,7 +373,7 @@ def evaluate(args, model, tokenizer, prefix="", eval_set='dev', save_aps=False):
                 for ap in aps:
                     f.write(str(ap)+"\n")
 
-            output_eval_file = os.path.join(eval_output_dir, "eval_losses_" + args.run_name)
+            output_eval_file = os.path.join(eval_output_dir, "losses_" + args.run_name)
             with open(output_eval_file, "w") as f:
                 for loss in all_losses:
                     f.write(str(loss)+"\n")
@@ -380,18 +382,12 @@ def evaluate(args, model, tokenizer, prefix="", eval_set='dev', save_aps=False):
             with open(output_eval_file, "w") as f:
                 for pred in preds:
                     f.write(str(pred)+"\n")
-            # to check others neg_sampled size
-            if args.task_name == "ms_v2":
-                negative_sampled_size = 10
-            elif args.task_name == "mantis_10":
-                negative_sampled_size = 11
-            elif args.task_name == "udc":
-                negative_sampled_size = 2
 
+            negative_sampled_size = 2
             preds_q_docs_avg = []
             for i in range(0,len(preds), negative_sampled_size):
                 preds_q_docs_avg.append(sum(preds[i:i+negative_sampled_size])/negative_sampled_size)
-            output_eval_file = os.path.join(eval_output_dir, "avg_confidence_scores_"+args.run_name)
+            output_eval_file = os.path.join(eval_output_dir, "avg_preds_"+args.run_name)
             with open(output_eval_file, "w") as f:
                 for avg in preds_q_docs_avg:
                     f.write(str(avg)+"\n")
@@ -554,7 +550,7 @@ def main():
     parser.add_argument("--pacing_function", default="", type=str, 
         help="Use one of the predefined pacing functions instead of shards (requires a values curriculum_file)")
     parser.add_argument("--invert_cl_values", action='store_true')
-    parser.add_argument("--percentage_data_by_epoch", default=0.66, type=float)
+    parser.add_argument("--percentage_data_by_epoch", default=1.0, type=float)
     parser.add_argument("--eval_difficult", action='store_true', help="Use difficult test set (only available for mantis)")
 
     args = parser.parse_args()

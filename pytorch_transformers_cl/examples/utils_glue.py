@@ -152,14 +152,31 @@ class MSDialogProcessor(DataProcessor):
 
     def _create_examples(self, lines, set_type):
         """Creates examples for the training and dev sets."""
-        examples = []
-        for (i, line) in enumerate(lines):
-            guid = "%s-%s" % (set_type, i)
-            text_a = ' '.join(line[1:-1]) # query
-            text_b = line[-1][0:-2]
-            label = line[0]
-            examples.append(
-                InputExample(guid=guid, text_a=text_a, text_b=text_b, label=label))
+        if set_type == "train":
+            examples = []
+            query_neg_count = 0
+            for (i, line) in enumerate(lines):
+                guid = "%s-%s" % (set_type, i)
+                text_a = ' '.join(line[1:-1]) # query
+                text_b = line[-1][0:-2]
+                label = line[0]
+                if label == '1':
+                    query_neg_count = 0
+                else:
+                    query_neg_count+=1
+                
+                if query_neg_count <= 1:
+                    examples.append(
+                        InputExample(guid=guid, text_a=text_a, text_b=text_b, label=label))
+        else:
+            examples = []
+            for (i, line) in enumerate(lines):
+                guid = "%s-%s" % (set_type, i)
+                text_a = ' '.join(line[1:-1]) # query
+                text_b = line[-1][0:-2]
+                label = line[0]
+                examples.append(
+                    InputExample(guid=guid, text_a=text_a, text_b=text_b, label=label))
         return examples
 
 class MantisProcessor(DataProcessor):
@@ -191,15 +208,32 @@ class MantisProcessor(DataProcessor):
         return ["0", "1"]
 
     def _create_examples(self, lines, set_type):
-        """Creates examples for the training and dev sets."""
-        examples = []
-        for (i, line) in enumerate(lines):
-            guid = "%s-%s" % (set_type, i)
-            text_a = ' '.join(line[1:-1]) # query
-            text_b = line[-1][0:-2]
-            label = line[0]
-            examples.append(
-                InputExample(guid=guid, text_a=text_a, text_b=text_b, label=label))
+        """Creates examples for the training and dev sets."""        
+        if set_type == "train":
+            examples = []
+            query_neg_count = 0
+            for (i, line) in enumerate(lines):
+                guid = "%s-%s" % (set_type, i)
+                text_a = ' '.join(line[1:-1]) # query
+                text_b = line[-1][0:-2]
+                label = line[0]
+                if label == '1':
+                    query_neg_count = 0
+                else:
+                    query_neg_count+=1
+                
+                if query_neg_count <= 1:
+                    examples.append(
+                        InputExample(guid=guid, text_a=text_a, text_b=text_b, label=label))
+        else:
+            examples = []
+            for (i, line) in enumerate(lines):
+                guid = "%s-%s" % (set_type, i)
+                text_a = ' '.join(line[1:-1]) # query
+                text_b = line[-1][0:-2]
+                label = line[0]
+                examples.append(
+                    InputExample(guid=guid, text_a=text_a, text_b=text_b, label=label))
         return examples
 
 class MrpcProcessor(DataProcessor):
