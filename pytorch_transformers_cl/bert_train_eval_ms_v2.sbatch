@@ -2,7 +2,7 @@
 
 #SBATCH --partition=general
 #SBATCH --qos=long
-#SBATCH --time=10:00:00
+#SBATCH --time=08:00:00
 #SBATCH --ntasks=1
 #SBATCH --cpus-per-task=1
 #SBATCH --gres=gpu:2
@@ -17,7 +17,7 @@ NUM_EPOCHS=3.0
 BATCH_SIZE=32
 LOGGING_STEPS=200
 DATA_DIR=/tudelft.net/staff-umbrella/domaincss/wsdm19/bert_ranker/data
-PACING_FUNCTION=root_2
+PACING_FUNCTION=root_10
 
 source /home/nfs/gustavopenha/env_transformers/bin/activate
 
