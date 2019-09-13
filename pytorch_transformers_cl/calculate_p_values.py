@@ -23,7 +23,7 @@ for seed in ['1','2','3','4','5']:
 	final_str += str(round(baseline.mean().values[0],4))+ "\t"
 	for competing_scoring in ['_turns_c_3'+pacing_func, '_utt_avg_words_c_3'+pacing_func,\
 						'_cand_docs_avg_words_c_3'+pacing_func, 'max_dif_exact_match_q_d_c_3'+pacing_func,\
-						'max_dif_semantic_match_q_d_c_3'+pacing_func, '_bert_avg_pred_scores_c_3'+pacing_func,\
+						'max_dif_semantic_match_q_d_c_3'+pacing_func, '_bert_preds_dif_c_3'+pacing_func,\
 						'_bert_avg_loss_c_3'+pacing_func]:
 		competing = pd.read_csv(path_dataset+'aps_run_cl_'+competing_scoring+'_seed_'+seed, names=['ap'])		
 		statistic, pvalue = stats.ttest_rel(competing['ap'].values, baseline['ap'].values)
