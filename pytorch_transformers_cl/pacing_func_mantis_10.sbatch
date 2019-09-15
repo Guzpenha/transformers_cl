@@ -17,11 +17,11 @@ NUM_EPOCHS=1
 BATCH_SIZE=32
 LOGGING_STEPS=200
 DATA_DIR=/tudelft.net/staff-umbrella/domaincss/wsdm19/bert_ranker/data
-PERCT_BY_EPOCH=0.20
+PERCT_BY_EPOCH=1.0
 
 source /home/nfs/gustavopenha/env_transformers/bin/activate
 
-for PACING_FUNCTION in 'standard_training' 'geom_progression' 'step' 'linear' 'root_2' 'root_5' 'root_10' 'root_20'
+for PACING_FUNCTION in 'standard_training' 'geom_progression' 'step' 'linear' 'root_2' 'root_5' 'root_10' 'root_50'
 do
     srun python ./examples/run_glue.py \
         --model_type bert \

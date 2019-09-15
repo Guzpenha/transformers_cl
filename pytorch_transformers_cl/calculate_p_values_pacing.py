@@ -26,10 +26,10 @@ for seed in ['1']:#,'2','3','4','5']:
 		statistic, pvalue = stats.ttest_rel(competing['ap'].values, baseline['ap'].values)
 		# statistic, pvalue = stats.wilcoxon(competing['ap'].values, baseline['ap'].values)
 		p=""
-		if pvalue<=0.05 and statistic >0 :
-			p+="$^{\\dagger}$"
 		if pvalue<=0.01 and statistic >0 :
-			p+="$^{\\ddagger}$"
+			p+=" $^{\\ddagger \\dagger}$"
+		elif pvalue<=0.05 and statistic >0 :
+			p+="$^{\\dagger}$"
 		# if pvalue<=0.10 and statistic >0 :
 			# p+="-"
 		final_str+= (str(round(competing.mean().values[0],4))+" "+p+"\t")

@@ -2,7 +2,7 @@
 
 #SBATCH --partition=general
 #SBATCH --qos=long
-#SBATCH --time=10:00:00
+#SBATCH --time=12:00:00
 #SBATCH --ntasks=1
 #SBATCH --cpus-per-task=1
 #SBATCH --gres=gpu:2
@@ -15,7 +15,7 @@ module load cuda/10.0 cudnn/10.0-7.4.2.24
 TASK_NAME=ms_v2
 NUM_EPOCHS=3.0
 BATCH_SIZE=32
-LOGGING_STEPS=200
+LOGGING_STEPS=50
 DATA_DIR=/tudelft.net/staff-umbrella/domaincss/wsdm19/bert_ranker/data
 
 source /home/nfs/gustavopenha/env_transformers/bin/activate
