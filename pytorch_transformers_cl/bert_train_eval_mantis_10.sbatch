@@ -5,7 +5,7 @@
 #SBATCH --time=28:00:00
 #SBATCH --ntasks=1
 #SBATCH --cpus-per-task=1
-#SBATCH --gres=gpu:3
+#SBATCH --gres=gpu:4
 #SBATCH --mem-per-cpu=8000
 #SBATCH --mail-type=END
 
@@ -15,10 +15,10 @@ module load cuda/10.0 cudnn/10.0-7.4.2.24
 TASK_NAME=mantis_10
 NUM_EPOCHS=1
 BATCH_SIZE=32
-LOGGING_STEPS=200
+LOGGING_STEPS=50
 DATA_DIR=/tudelft.net/staff-umbrella/domaincss/wsdm19/bert_ranker/data
-PACING_FUNCTION=root_2
-PERCT_BY_EPOCH=0.40
+PACING_FUNCTION=root_5
+PERCT_BY_EPOCH=0.30
 
 source /home/nfs/gustavopenha/env_transformers/bin/activate
 
@@ -183,7 +183,7 @@ srun python ./examples/run_glue.py \
     --evaluate_during_training \
     --overwrite_output_dir \
     --logging_steps $LOGGING_STEPS \
-    --curriculum_file $DATA_DIR/$TASK_NAME/${TASK_NAME}_bert_avg_pred_scores_c_3 \
+    --curriculum_file $DATA_DIR/$TASK_NAME/${TASK_NAME}_bert_preds_dif_c_3 \
     --eval_all_checkpoints \
     --seed $RANDOM_SEED \
     --use_additive_cl \

@@ -18,10 +18,10 @@ args = parser.parse_args()
 
 path_dataset = path+args.dataset+"_output/"
 final_str = ""
-for seed in ['1']:#,'2','3','4','5']:
+for seed in ['1','2','3','4','5']:
 	baseline = pd.read_csv(path_dataset+'aps_run_cl__bert_avg_loss_c_3standard_training_seed_'+seed, names=['ap'])
 	final_str += str(round(baseline.mean().values[0],4))+ "\t"
-	for competing_pacing in ['geom_progression', 'step', 'linear', 'root_2', 'root_5', 'root_10', 'root_20']:
+	for competing_pacing in ['geom_progression', 'step', 'linear', 'root_2', 'root_5', 'root_10', 'root_50']:
 		competing = pd.read_csv(path_dataset+'aps_run_cl__bert_avg_loss_c_3'+competing_pacing+'_seed_'+seed, names=['ap'])		
 		statistic, pvalue = stats.ttest_rel(competing['ap'].values, baseline['ap'].values)
 		# statistic, pvalue = stats.wilcoxon(competing['ap'].values, baseline['ap'].values)
