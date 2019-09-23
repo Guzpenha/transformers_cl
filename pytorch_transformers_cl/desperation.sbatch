@@ -5,7 +5,7 @@
 #SBATCH --time=10:00:00
 #SBATCH --ntasks=1
 #SBATCH --cpus-per-task=1
-#SBATCH --gres=gpu:2
+#SBATCH --gres=gpu:3
 #SBATCH --mem-per-cpu=8000
 #SBATCH --mail-type=END
 
@@ -17,9 +17,8 @@ source /home/nfs/gustavopenha/env_transformers/bin/activate
 # NUM_EPOCHS=3.0
 # BATCH_SIZE=32
 # LOGGING_STEPS=200
-# DATA_DIR=/tudelft.net/staff-umbrella/domaincss/wsdm19/bert_ranker/data
+# DATA_DIR=/tudelft.net/staff-umbrella/conversationalsearch/transformers_cl/pytorch_transformers_cl/data
 # PACING_FUNCTION=root_2
-
 
 # srun python ./examples/run_glue.py \
 #     --model_type bert \
@@ -91,14 +90,13 @@ source /home/nfs/gustavopenha/env_transformers/bin/activate
 #     --use_additive_cl \
 #     --pacing_function $PACING_FUNCTION
 
-
 TASK_NAME=mantis_10
-NUM_EPOCHS=1
+NUM_EPOCHS=2.0
 BATCH_SIZE=32
-LOGGING_STEPS=50
-DATA_DIR=/tudelft.net/staff-umbrella/domaincss/wsdm19/bert_ranker/data
+LOGGING_STEPS=600
+DATA_DIR=/tudelft.net/staff-umbrella/conversationalsearch/transformers_cl/pytorch_transformers_cl/data
 PACING_FUNCTION=root_2
-PERCT_BY_EPOCH=0.30
+PERCT_BY_EPOCH=1.0
 
 srun python ./examples/run_glue.py \
     --model_type bert \

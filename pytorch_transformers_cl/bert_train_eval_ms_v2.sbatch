@@ -16,7 +16,7 @@ TASK_NAME=ms_v2
 NUM_EPOCHS=3.0
 BATCH_SIZE=32
 LOGGING_STEPS=50
-DATA_DIR=/tudelft.net/staff-umbrella/domaincss/wsdm19/bert_ranker/data
+DATA_DIR=/tudelft.net/staff-umbrella/conversationalsearch/transformers_cl/pytorch_transformers_cl/data
 PACING_FUNCTION=root_2
 
 source /home/nfs/gustavopenha/env_transformers/bin/activate

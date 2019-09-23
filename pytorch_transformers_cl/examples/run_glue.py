@@ -661,13 +661,13 @@ def main():
         # logger.info("Evaluate the following checkpoints: %s", checkpoints)
         for checkpoint in checkpoints:
             if args.save_aps:
-                global_step = checkpoint.split('-')[-1] if len(checkpoints) > 1 else ""
+                global_step = checkpoint.split('-')[-1]
                 if global_step == 'best_'+args.run_name:
                     model = model_class.from_pretrained(checkpoint)
                     model.to(args.device)
                     evaluate(args, model, tokenizer, prefix=global_step, eval_set='train', save_aps=True)
             else:
-                global_step = checkpoint.split('-')[-1] if len(checkpoints) > 1 else ""
+                global_step = checkpoint.split('-')[-1]
                 if global_step == 'best_'+args.run_name:
                     model = model_class.from_pretrained(checkpoint)
                     model.to(args.device)

@@ -16,7 +16,7 @@ TASK_NAME=mantis_10
 NUM_EPOCHS=1
 BATCH_SIZE=32
 LOGGING_STEPS=200
-DATA_DIR=/tudelft.net/staff-umbrella/domaincss/wsdm19/bert_ranker/data
+DATA_DIR=/tudelft.net/staff-umbrella/conversationalsearch/transformers_cl/pytorch_transformers_cl/data
 PERCT_BY_EPOCH=0.30
 
 source /home/nfs/gustavopenha/env_transformers/bin/activate

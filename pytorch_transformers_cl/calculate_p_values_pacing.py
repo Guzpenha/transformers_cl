@@ -4,7 +4,7 @@ import pandas as pd
 import os
 from scipy import stats
 
-path = "/tudelft.net/staff-umbrella/domaincss/wsdm19/bert_ranker/data/"
+path = "/tudelft.net/staff-umbrella/conversationalsearch/transformers_cl/pytorch_transformers_cl/data/"
 parser = argparse.ArgumentParser()
 
 ## Required parameters
