@@ -91,6 +91,44 @@ class DataProcessor(object):
                 lines.append(line)
             return lines
 
+class FAQProcessor(DataProcessor):
+    """Processor for the Ubuntu Dialog Corpus data set."""
+
+    def get_train_examples(self, data_dir):
+        """See base class."""
+        logger.info("LOOKING AT {}".format(os.path.join(data_dir, "quora_train.tsv")))
+        return self._create_examples(
+            self._read_tsv(os.path.join(data_dir, "quora_train.tsv")), "train")
+
+    def get_dev_examples(self, data_dir):
+        """See base class."""
+        return self._create_examples(
+            self._read_tsv(os.path.join(data_dir, "quora_dev.tsv")), "dev")
+
+    def get_test_examples(self, data_dir):
+        """See base class."""
+        return self._create_examples(
+            self._read_tsv(os.path.join(data_dir, "quora_test.tsv")), "test")
+
+    def get_labels(self):
+        """See base class."""
+        return ["0", "1"]
+
+    def _create_examples(self, lines, set_type):
+        """Creates examples for the training and dev sets."""
+        examples = []
+        for (i, line) in enumerate(lines):
+            guid = "%s-%s" % (set_type, i)
+            text_a = line[3]
+            text_b = line[4]
+            if line[0] == "0":
+                label = "1"
+            else:
+                label = "0"
+            examples.append(
+                InputExample(guid=guid, text_a=text_a, text_b=text_b, label=label))
+        return examples
+
 class UDCProcessor(DataProcessor):
     """Processor for the Ubuntu Dialog Corpus data set."""
 
@@ -871,11 +909,13 @@ processors = {
     "mantis_10":MantisProcessor,
     "mantis_50":MantisProcessor,
     "ms_v2":MSDialogProcessor,
-    "udc":UDCProcessor
+    "udc":UDCProcessor,
+    "faq":FAQProcessor
 }
 
 output_modes = {
     "cola": "classification",
+    "faq": "classification",
     "mnli": "classification",
     "mnli-mm": "classification",
     "mrpc": "classification",
@@ -893,6 +933,7 @@ output_modes = {
 
 GLUE_TASKS_NUM_LABELS = {
     "cola": 2,
+    "faq": 2,
     "mnli": 3,
     "mrpc": 2,
     "sst-2": 2,

@@ -2,7 +2,7 @@
 
 #SBATCH --partition=general
 #SBATCH --qos=long
-#SBATCH --time=25:00:00
+#SBATCH --time=30:00:00
 #SBATCH --ntasks=1
 #SBATCH --cpus-per-task=1
 #SBATCH --gres=gpu:3
@@ -15,7 +15,7 @@ module load cuda/10.0 cudnn/10.0-7.4.2.24
 TASK_NAME=mantis_10
 NUM_EPOCHS=2.0
 BATCH_SIZE=32
-LOGGING_STEPS=600
+LOGGING_STEPS=300
 DATA_DIR=/tudelft.net/staff-umbrella/conversationalsearch/transformers_cl/pytorch_transformers_cl/data
 PACING_FUNCTION=root_2
 PERCT_BY_EPOCH=1.0
