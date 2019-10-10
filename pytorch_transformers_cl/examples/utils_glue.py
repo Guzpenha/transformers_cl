@@ -884,6 +884,8 @@ def compute_metrics(task_name, preds, labels):
         return {"acc": simple_accuracy(preds, labels)}
     elif task_name == "wnli":
         return {"acc": simple_accuracy(preds, labels)}
+    elif task_name == "faq":
+        return {"map": mean_average_precision(preds, labels), "ndcg": ndcg_at_10(preds, labels)}
     elif task_name == "mantis_10":
         return {"map": mean_average_precision(preds, labels), "ndcg": ndcg_at_10(preds, labels)}
     elif task_name == "mantis_50":
