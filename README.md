@@ -9,7 +9,7 @@ This code builds upon the [🤗 Transformers](https://github.com/huggingface/tra
 --scoring_function SCORING_FUNCTION_FILE: str with the path of a file with the difficulty score for each instance in the train set. Each line must have just a float score for the training instance at that index in the training file.
 ```
 
-The framework is based on previous work on curriculum learning and it has two main functions: pacing functions and scoring functions. The scoring functions measure the difficulty of an instance (in our case a a query is a dialogue context, i.e. set of previous utterances) and the pacing function determines how fast you go from easy to difficult instances during training.
+The framework is based on previous work on curriculum learning and it has two main functions: pacing functions and scoring functions. The scoring functions measure the difficulty of an instance (in our case the query is a dialogue context, i.e. set of previous utterances, and the documents are a set of candidate responses) and the pacing function determines how fast you go from easy to difficult instances during training.
 
 <p align="center">
 <img src="framework.png" align="center">
