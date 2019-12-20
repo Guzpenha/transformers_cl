@@ -15,6 +15,6 @@ The framework is based on previous work on curriculum learning and it has two ma
 <img src="framework.png" align="center">
 </p>
 
-This is the code used for the ECIR'20 paper "Curriculum Learning Strategies for IR: An Empirical Study on Conversation Response Ranking". To reproduce the results of the paper it is necessary to download the datasets: [MANtIS](https://guzpenha.github.io/MANtIS/) and [MSDialog](https://ciir.cs.umass.edu/downloads/msdialog/), calculate the scoring functions for each training set with the _'calculate_scoring_function.py'_ script to use the difficulty scores as input for the BERT script (_'run_glue.py'_). To calculate the scoring functions based on BERT, run _'run_glue.py'_ with --save_aps parameter, and use the output files 'losses_' and 'preds_' respectively.
+This is the code used for the ECIR'20 paper "Curriculum Learning Strategies for IR: An Empirical Study on Conversation Response Ranking" [[preprint](https://arxiv.org/abs/1912.08555)]. To reproduce the results of the paper it is necessary to download the datasets: [MANtIS](https://guzpenha.github.io/MANtIS/) and [MSDialog](https://ciir.cs.umass.edu/downloads/msdialog/), calculate the scoring functions for each training set with the _'calculate_scoring_function.py'_ script to use the difficulty scores as input for the BERT script (_'run_glue.py'_). To calculate the scoring functions based on BERT, run _'run_glue.py'_ with --save_aps parameter, and use the output files 'losses_' and 'preds_' respectively.
 
 If you have any questions feel free to send me an email.
